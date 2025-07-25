@@ -1,0 +1,15 @@
+{
+  "TBENCH_WARMUPREQS" : "12000",
+  "TBENCH_SERVER": "0.0.0.0",
+  "TBENCH_SERVER_PORT" : "11211",
+  "TBENCH_NCLIENTS" : "1",
+  "duration": "60",
+  "model": "/src/img-dnn.inputs/img-dnn/models/model.xml",
+  "reqs": "100000000",
+  "nthreads": "8",
+  "qps": "6000",
+  "TBENCH_MNIST_DIR": "/src/img-dnn.inputs/img-dnn/mnist",
+  "TBENCH_CLIENT_THREADS": "1",
+  "TBENCH_MINSLEEPNS": "100",
+  "TBENCH_RANDSEED":"123"
+}

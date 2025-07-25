@@ -1,0 +1,10 @@
+{
+  "qps": "6000",
+  "TBENCH_WARMUPREQS" : "12000",
+  "TBENCH_MINSLEEPNS": "100",
+  "TBENCH_RANDSEED":"123",
+  "TBENCH_TERMS_FILE": "/src/xapian.inputs/xapian/terms.in",
+  "duration": "60",
+  "dataset": "/src/xapian.inputs/xapian/wiki",
+  "nthreads": "8"
+}

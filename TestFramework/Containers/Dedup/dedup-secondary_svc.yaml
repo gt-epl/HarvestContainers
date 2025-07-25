@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dedup-secondary-svc
+  labels:
+    name: dedup-secondary-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 20000
+      nodePort: 30000
+      name: http
+  selector:
+    name: dedup-secondary-server

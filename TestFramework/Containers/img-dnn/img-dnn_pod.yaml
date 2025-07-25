@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: img-dnn-primary
+  labels:
+    name: img-dnn-server
+spec:
+  containers:
+    - name: img-dnn
+      image: img-dnn:latest 
+      imagePullPolicy: Never
+      env:
+      - name: DATA_ROOT
+        value: "/src/img-dnn.inputs"
+      - name: TBENCH_WARMUPREQS
+        value: "12000"
+      - name: TBENCH_MAXREQS
+        value: "360000"
+      - name: TBENCH_SERVER
+        value: "0.0.0.0"
+      - name: TBENCH_SERVER_PORT
+        value: "11211"
+      - name: TBENCH_NCLIENTS
+        value: "1"
+      - name: SVR_THREADS
+        value: "8"
+      - name: REQS
+        value: "100000000" # Set this very high; the harness controls maxreqs
+      ports:
+        - name: img-dnn
+          containerPort: 11211
+          protocol: TCP
+        - name: launcher
+          containerPort: 20000
+          protocol: TCP
+      volumeMounts:
+        - name: img-dnn-vol
+          mountPath: /src/img-dnn.inputs/
+        - name: img-dnn-res
+          mountPath: /results
+  volumes:
+    - name: img-dnn-vol
+      hostPath:
+        path: /dev/shm/img-dnn.inputs
+    - name: img-dnn-res
+      hostPath:
+        path: /dev/shm/results

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fibtest-primary
+  labels:
+    name: fibtest-primary-server
+spec:
+  containers:
+    - name: fibtest
+      image: fibtest
+      imagePullPolicy: Never
+      ports:
+        - name: fibtest-one
+          containerPort: 20000
+          protocol: TCP
+  nodeSelector:
+    podtype: harvest

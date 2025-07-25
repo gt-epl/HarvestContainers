@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: memcached-two
+  labels:
+    name: memcached-server-two
+spec:
+  containers:
+    - name: memcached-two
+      image: memcached-hc
+      imagePullPolicy: Never
+      ports:
+        - name: memcached-two
+          containerPort: 11211
+          protocol: TCP
+  nodeSelector:
+    podtype: memcached

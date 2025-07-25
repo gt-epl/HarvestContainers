@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: memcached-one
+  labels:
+    name: memcached-server-one
+spec:
+  containers:
+    - name: memcached-one
+      image: memcached-hc
+      imagePullPolicy: Never
+      ports:
+        - name: memcached-one
+          containerPort: 11212
+          protocol: TCP

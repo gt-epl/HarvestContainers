@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: terasort-secondary
+  labels:
+    name: terasort-secondary-server
+spec:
+  containers:
+    - name: terasort
+      image: terasort
+      imagePullPolicy: Never
+      ports:
+        - name: terasort 
+          containerPort: 20000
+          protocol: TCP
+      volumeMounts:
+        - name: terasort-input-vol
+          mountPath: /mnt/data/inputs
+        - name: terasort-output-vol
+          mountPath: /mnt/data/outputs
+        - name: terasort-tmp-vol
+          mountPath: /tmp/
+  volumes:
+    - name: terasort-input-vol
+      hostPath:
+        path: /mnt/extra/terasort.inputs
+    - name: terasort-output-vol
+      hostPath:
+        path: /mnt/extra/terasort.outputs
+    - name: terasort-tmp-vol
+      hostPath:
+        path: /mnt/extra/tmp

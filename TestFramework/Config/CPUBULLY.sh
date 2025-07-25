@@ -1,0 +1,8 @@
+#!/bin/bash
+
+CNTR_NAME="cpubully"
+CNTR_PORT="20001"
+
+BULLY_WORKERS="11"
+BULLY_OUTPUT="cpubully.out"
+BULLY_TEST_DURATION="1"

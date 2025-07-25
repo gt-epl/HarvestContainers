@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dedup-secondary
+  labels:
+    name: dedup-secondary-server
+spec:
+  containers:
+    - name: dedup
+      image: dedup
+      imagePullPolicy: Never
+      ports:
+        - name: dedup 
+          containerPort: 20000
+          protocol: TCP
+      volumeMounts:
+        - name: dedup-input-vol
+          mountPath: /mnt/data/inputs
+  volumes:
+    - name: dedup-input-vol
+      hostPath:
+        path: /mnt/extra/dedup.inputs

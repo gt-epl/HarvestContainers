@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: iperf3
+  labels:
+    name: iperf3
+spec:
+  containers:
+    - name: iperf3
+      image: iperf3
+      imagePullPolicy: Never
+      ports:
+        - name: iperf3 
+          containerPort: 5201
+          protocol: TCP

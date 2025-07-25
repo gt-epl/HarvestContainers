@@ -1,0 +1,1 @@
+BOOT_IMAGE=/boot/vmlinuz-5.11.0-49-generic root=UUID=8b9e1980-828f-418f-ae44-80689ca8bd2f ro console=ttyS0,115200 intel_pstate=disable acpi=force nosmt=force

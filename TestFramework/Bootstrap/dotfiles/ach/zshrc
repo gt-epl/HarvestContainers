@@ -1,0 +1,6 @@
+export PATH=$HOME/Workspace/Framework/bin:/usr/local/bin:$PATH
+export ZSH=$HOME/.oh-my-zsh
+ZSH_THEME="ach"
+DISABLE_AUTO_UPDATE="true"
+plugins=(git)
+source $ZSH/oh-my-zsh.sh
