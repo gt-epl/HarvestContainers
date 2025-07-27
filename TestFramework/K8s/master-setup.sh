@@ -4,7 +4,6 @@ sudo swapoff -a
 
 sudo kubeadm reset -f
 
-cd /project/HarvestContainers/TestFramework/K8s/
 sudo kubeadm init --config kubeadm-config.yaml
 
 mkdir -p $HOME/.kube
@@ -20,6 +19,6 @@ echo ""
 
 sed "s/NODE_IP_ADDR/${MASTER_IP}/g" kubeadm-flags.env > kubeadm-flags.env.tmp
 
-sudo mv /project/HarvestContainers/TestFramework/K8s/kubeadm-flags.env.tmp /var/lib/kubelet/kubeadm-flags.env
+sudo mv kubeadm-flags.env.tmp /var/lib/kubelet/kubeadm-flags.env
 
 sudo systemctl restart kubelet

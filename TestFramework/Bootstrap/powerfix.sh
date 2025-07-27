@@ -6,7 +6,7 @@ echo "[+] Disabling turbo boost"
 # Disable turbo boost for intel-pstate driver
 echo "1" | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo
 # Disable turbo boost for acpi-cpufreq scaling driver
-echo "0" | sudo tee /sys/devices/system/cpu/cpufreq/boost
+# echo "0" | sudo tee /sys/devices/system/cpu/cpufreq/boost
 sleep 1
 # Set power governor to "performance"
 echo "[+] Setting power governor to 'userspace'"

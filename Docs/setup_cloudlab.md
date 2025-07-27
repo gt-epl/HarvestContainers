@@ -33,7 +33,7 @@ git clone https://github.com/gt-epl/HarvestContainers.git
 ---
 - We will rely on ssh keys and aliases to access and manage the physical nodes.
 - In fact, most scripts make use of ssh aliases to address and trigger runs on different machines using the aliases specified in the template config [../TestFramework/Experiments/cloudlab/template.config](../TestFramework/Experiments/cloudlab/template.config)
-- Create one key-pair exclusive for cloudlab management using `ssh-keygen` shared across nodes
+- Create one key-pair (cloudlab_key / cloudlab_key.pub) exclusive for cloudlab management using `ssh-keygen` shared across nodes
 - Servers are assigned ip addresses in the range 192.168.10.0/24. For a 2 node cluser, this is 192.168.10.10 and 192.168.10.11
 - You can resue the provided template ssh config file. Make sure the keys and usernames are updated. oneliner to configure username: `sed "s/USER/$USER/g" template.config > ~/.ssh/config`
 - Ensure both the ssh config and generated public key is available on all other nodes. The output of the public key can be appendend to `~/.ssh/authorized_keys` file.

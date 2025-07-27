@@ -8,6 +8,6 @@ echo ""
 
 sed "s/NODE_IP_ADDR/${CLIENT_IP}/g" kubeadm-flags.env > kubeadm-flags.env.tmp
 
-sudo mv /project/HarvestContainers/TestFramework/K8s/kubeadm-flags.env.tmp /var/lib/kubelet/kubeadm-flags.env
+sudo mv kubeadm-flags.env.tmp /var/lib/kubelet/kubeadm-flags.env
 
 sudo systemctl restart kubelet
