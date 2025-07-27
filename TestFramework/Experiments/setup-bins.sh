@@ -4,9 +4,9 @@ build() {
   echo "[+] Build bins"
   cur=$(pwd)
 
-  cd ../../Listener && make
-  cd ../../Monitor && make
-  cd ../../Balancer && make
+  cd $cur/../../Listener && make
+  cd $cur/../../Monitor && make
+  cd $cur/../../Balancer && make
 
   cd $cur
 }
