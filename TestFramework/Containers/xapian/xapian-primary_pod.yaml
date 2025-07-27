@@ -6,8 +6,8 @@ metadata:
     name: xapian-server
 spec:
   containers:
-    - name: xapian
-      image: xapian:latest 
+    - name: xapian-primary
+      image: asarma31/xapian-primary:latest 
       imagePullPolicy: Never
       env:
       - name: DATA_ROOT
