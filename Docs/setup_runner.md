@@ -2,7 +2,7 @@
 
 ## Introduction
 ---
-Test runners are currenltly designed to be executed from the node hosting the target application containers (both Primary and Secondary). Therefore, this document consists of steps to be executed on this specific node (unless explicitly mentioned otherwise). Most test runners have a similar design and follows the below workflow:
+Test runners are currently designed to be executed from the node (clabsvr in template.config) hosting the target application containers (both Primary and Secondary). Therefore, this document consists of steps to be executed on this specific node (unless explicitly mentioned otherwise). Most test runners have a similar design and follows the below automated workflow:
 1. Start the Listener, Monitor and Balancer components
 2. Start the Primary workload
 3. Start the Secondary workload (skip if Baseline test)
@@ -15,7 +15,7 @@ Test runners are currenltly designed to be executed from the node hosting the ta
     ./<workload>_runner.sh <trial_num> <num_secondary_workers> <tic> <qps> <dur> <harvest/baseline>
     ```
 7. All secondary runners are specified within `secondary.sh`. Default is `CPUBully`
-8. Runner files are within `/project/HarvestContainers/TestFramework/Experiment`
+8. Runner files are within `~/HarvestContainers/TestFramework/Experiment`
 
 ## Setup Steps
 ---
@@ -24,13 +24,13 @@ Test runners are currenltly designed to be executed from the node hosting the ta
    cd /project/HarvestContainers/TestFramework/Experiment
    ./cp-bins-from-home.sh
    ```
-2. Ensure appropriate configs in `/project/HarvestContainers/TestFramework/Config/SYSTEM.sh`
+2. Ensure appropriate configs in `~/HarvestContainers/TestFramework/Config/SYSTEM.sh`
    1.  Navigate to below snipped in config:
          ```bash
          if [ "${ENV_TYPE}" == "CLOUDLAB" ]
          then
-            WORKING_DIR="/project/HarvestContainers/TestFramework"
-            CPULIST="2,4,6,8,10,12,14,16"
+            WORKING_DIR="~/HarvestContainers/TestFramework"
+            CPULIST="2,4,6,8,10,12,14,16" # <-- this ensures 8 cores NUMA node 0 are used.
             SECONDARY_CPULIST="18"
             MONITOR_BINDCPU="24"
             BALANCER_BINDCPU="26"

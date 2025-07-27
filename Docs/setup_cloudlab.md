@@ -4,75 +4,61 @@
 ---
 All experiments (functional & performance) were carried out on resources made available by [Cloudlab](https://www.cloudlab.us).
 We primarily make use of 2 resource types. Refer [cloudlab docs](http://docs.cloudlab.us/hardware.html) for more details:
-1. `c220g5` - 20 core Xeon Silvers (Skylake)
-2. `c6420` - 16 core Xeon Gold (Skylake)
+1. `c6420` - 16 core Xeon Gold (Skylake)
+2. `c220g5` - 20 core Xeon Silvers (Skylake)
 
-Performance runs were carried out on `c6420` machines.
+Performance runs were carried out on `c6420` machines. We highly recommend you use the corresponding `c6420` profiles for artifact evaluation. This profile has already been setup with necessary dependencies.
 
-## Requesting Resources on Cloulab
+If you'd like to setup from scratch, refer to `HarvestContainers/TestFramework/Bootstrap/firstboot.sh` for all dependencies.
+
+## Requesting Resources on Cloudlab
 ---
 We make use of the following profiles to instantiate resources (aka creating an experiment on cloudlab)
-A 3 (or even 2) node cluster is sufficient for all experiments.
+A **2 node cluster** is sufficient for all experiments.
 
 Profiles:
-1. For `c220g5` - https://www.cloudlab.us/show-profile.php?uuid=01f42c4b-c3a1-11ed-b28b-e4434b2381fc
-2. For `c6420` - https://www.cloudlab.us/show-profile.php?uuid=70b392b8-0dc8-11ed-aacb-e4434b2381fc
+1. For `c6420` - https://www.cloudlab.us/show-profile.php?uuid=70b392b8-0dc8-11ed-aacb-e4434b2381fc
+2. For `c220g5` - https://www.cloudlab.us/show-profile.php?uuid=01f42c4b-c3a1-11ed-b28b-e4434b2381fc
 
 >  **Note:** Cloudlab only allows you to create an experiment for upto 16 hours. You may request a reservation to create an experiment and then extend it for longer.
 
-## Setting up management access.
----
-- We will rely on ssh keys and aliases to access and manage the physical nodes.
-- In fact, most scripts make use of ssh aliases to address and trigger runs on different machines
-- Create a key-pair exclusive for cloudlab management using `ssh-keygen`
-- You may create a key-pair for github access as well, since most of the code will need to be pulled from the remote repo.
-- You will need to change group permissions on the `/project` directory recursively to avoid multi-user access restrictions. 
-    ```bash
-    sudo chmod 775 -R /project
-    sudo chgrp -R nfslicer-PG0 /project
-    ```
 
-## Helper Scripts
----
-> **WARNING:** Please review these scripts before executing. These scripts are customized to the "asarma31" user.
-If you copy the ssh access urls from the experiment page of cloudlab into your clipboard, you can use the following scripts to auto-create ssh config for the provisioned resources.
+### Clone repository on all nodes
 
-> Requires `pbpaste` or [`xclip`](https://ostechnix.com/how-to-use-pbcopy-and-pbpaste-commands-on-linux/) for linux.
-
-1. Text to copy from cloudlab.us/status.php:
-    ```
-    ssh asarma31@c220g5-110513.wisc.cloudlab.us
-    ssh asarma31@c220g5-110519.wisc.cloudlab.us
-    ssh asarma31@c220g5-110504.wisc.cloudlab.us
-    ```
-
-2. Create ssh configs in ~/.ssh/config.d/clab.sshconfig. (also creates hosts.txt)
-   Run `HarvestContainers/TestFramework/Experiments/cloudlab/bootstrap/gencfg.sh`
-
-3. Copy rc/.config files to cloudlab machines. Modify as needed and run the following file with the `--host` argument:
 ```bash
-    HarvestContainers/TestFramework/Experiments/cloudlab/bootstrap/prep.py --hosts hosts.txt
+git clone https://github.com/gt-epl/HarvestContainers.git
 ```
 
-## Dependencies
-
+### Setting up ssh access.
 ---
-- Both machine types have a prebuilt image which should have all deps pre-built with minor exceptions which can be fixed by using `sudo apt install`. 
-- The main code repository in the pre-built machine is located at `/project/HarvestContainers/`
-- Please pull latest code (assuming ssh keys to access github is setup on all cloudlab nodes)
-- The pre-built image already has some deps installed. Please see `/project/HarvestContainers/TestFramework/Bootstrap/firstboot.sh` for deps present in the image.
-- Please see [Fix Dependencies](#fix-dependencies) for deps currently missing in the prebuilt image.
+- We will rely on ssh keys and aliases to access and manage the physical nodes.
+- In fact, most scripts make use of ssh aliases to address and trigger runs on different machines using the aliases specified in the template config [../TestFramework/Experiments/cloudlab/template.config](../TestFramework/Experiments/cloudlab/template.config)
+- Create one key-pair exclusive for cloudlab management using `ssh-keygen` shared across nodes
+- Servers are assigned ip addresses in the range 192.168.10.0/24. For a 2 node cluser, this is 192.168.10.10 and 192.168.10.11
+- You can resue the provided template ssh config file. Make sure the keys and usernames are updated. oneliner to configure username: `sed "s/USER/$USER/g" template.config > ~/.ssh/config`
+- Ensure both the ssh config and generated public key is available on all other nodes. The output of the public key can be appendend to `~/.ssh/authorized_keys` file.
 
-### Power Fix
-- Fix frequencies for c6420 machines:
-  - Run `/project/HarvestContainers/TestFramework/Bootstrap/powerfix.sh`
-- Fix for c220g2:
+template config file e.g.: 
+```
+Host clabsvr
+  User USER                           <--- change this
+  Hostname 192.168.10.10
+  Port 22
+  IdentityFile ~/.ssh/cloudlab_key    <--- generated by you using ssh-keygen
+  StrictHostKeyChecking=no
+```
+
+> Optional: You may create a key-pair for github access as well, since most of the code will need to be pulled from the remote repo.
+
+### Fix CPU frequencies for reproducible runs
+- For c6420 machines:
+  - Run `HarvestContainers/TestFramework/Bootstrap/powerfix.sh`
+- For c220g2:
   - Turn of smt ([source](https://serverfault.com/questions/235825/))
   
     `echo off | sudo tee /sys/devices/system/cpu/smt/control` disable-hyperthreading-from-within-linux-no-access-to-bios)
-  - Review and run `/project/HarvestContainers/TestFramework/Experiment/cloudlab/bootstrap/setcpufreq.sh`
+  - Review and run `HarvestContainers/TestFramework/Experiment/cloudlab/bootstrap/setcpufreq.sh`
   - You may need to load acpi-cpufreq kernel module using `sudo modprobe`
-
 
 ### Setup Disk
 1. cloudlab nodes have limited disk space. But we can mount more disk space.
@@ -94,8 +80,25 @@ If you copy the ssh access urls from the experiment page of cloudlab into your c
     sudo chmod -R 775 /mnt/extra
     sudo chgrp -R nfslicer-PG0 /mnt/extra
     ```
+3. helper script for c6420 machines: [../TestFramework/Bootstrap/cloudlab/c6420_disk_setup.sh](../TestFramework/Bootstrap/cloudlab/c6420_disk_setup.sh)
 
-## Fix Dependencies
----
-1. `pip install scipy`
-2. `sudo apt install uuid-dev`
+
+### Relocate Docker Files
+1. By default, Docker data directory is located at /var/lib/docker. This location is problematic on Cloudlab, since / is typically provisioned with 16 GB.
+2. We can relocate Docker data directory with the following steps.
+3. First stop the Docker service with sudo service docker stop
+4. Make a new Docker data dir with sudo mkdir /mnt/extra/docker
+5. Then edit /etc/docker/daemon.json (you will likely be creating this file from scratch) and include the following:
+
+{
+    "data-root": "/mnt/extra/docker"
+}
+
+6. Add yourself to the docker group to make life easier sudo usermod -aG docker <your_username> (you'll need to logout/login for this to take effect, but afterwards you can run docker commands w/o sudo)
+7. Logout and Login again for changes to take effect.
+8. helper script: [../TestFramework/Bootstrap/cloudlab/relocate_docker.sh](../TestFramework/Bootstrap/cloudlab/relocate_docker.sh) 
+
+
+> Ensure CPU frequencies are fixed, disks are allocated and Docker has been relocated on all cloudlab nodes before proceeding.
+
+### Next: [Setup Kubernetes](./setup_k8s.md)
