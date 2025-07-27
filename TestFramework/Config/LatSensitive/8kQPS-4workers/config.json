@@ -1,7 +1,0 @@
-{
-  "WorkerCount": 4,
-  "DurationSec": 60,
-  "QPS": 8000,
-  "SimultaneousWakeups": 1,
-  "LoadPercent": 50
-}

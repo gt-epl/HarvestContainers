@@ -2,7 +2,7 @@
 
 ## Introduction
 ---
-Test runners are currently designed to be executed from the node (clabsvr in template.config) hosting the target application containers (both Primary and Secondary). Therefore, this document consists of steps to be executed on this specific node (unless explicitly mentioned otherwise). Most test runners have a similar design and follows the below automated workflow:
+Test runners are currently designed to be executed from the clabcl1 that hosts Primary and Secondary containers. Therefore, this document consists of steps to be executed on this specific node (unless explicitly mentioned otherwise). Most test runners have a similar design and follows the below automated workflow:
 1. Start the Listener, Monitor and Balancer components
 2. Start the Primary workload
 3. Start the Secondary workload (skip if Baseline test)
@@ -19,10 +19,10 @@ Test runners are currently designed to be executed from the node (clabsvr in tem
 
 ## Setup Steps
 ---
-1. Prepare the HarvestContainers compontents - 
+1. Prepare the HarvestContainers compontents on clabcl1. 
    ```bash
    cd /project/HarvestContainers/TestFramework/Experiment
-   ./cp-bins-from-home.sh
+   ./setup-bins.sh
    ```
 2. Ensure appropriate configs in `~/HarvestContainers/TestFramework/Config/SYSTEM.sh`
    1.  Navigate to below snipped in config:
