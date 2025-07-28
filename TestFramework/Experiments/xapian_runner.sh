@@ -1,9 +1,17 @@
 #!/bin/bash
+# Usage: ./xapian_runner.sh <iteration> <secondary_workers> <target_idle_cores> <qps> <duration> <type>
+# e.g.,: ./xapian_runner.sh 1 1 1 3000 60 baseline
+
 source ../bin/boilerplate.sh
 source ../Config/SYSTEM.sh
 source ./secondary.sh
 
-MASTER="clabsvr"
+MASTER="clabsvr" # used by secondary.sh
+XAPIAN_IP="192.168.10.11"
+XAPIAN_PORT="31000"
+XAPIAN_ALIAS="clabcl1"
+XAPIAN_SRC="~/HarvestContainers/TestFramework/Containers/xapian/xapian-src/xapian"
+
 ITER=$1
 SECONDARY_WORKERS=$2
 TARGET_IDLE_CORES=$3
@@ -11,10 +19,12 @@ QPS=$4
 DURATION=$5
 TYPE="$6"
 META="8c,8st,1ct"
-LOGDIR="/mnt/extra/logs"
-RESDIR="/mnt/extra/results"
+LOGDIR="/mnt/extra/logs/xapian"
+RESDIR="/mnt/extra/results/xapian"
 
-#e.g. ./xapian_logger.sh 1 1 1 3000 60
+
+mkdir -p $LOGDIR
+mkdir -p $RESDIR
 
 LOGFILE=$(cat /proc/sys/kernel/random/uuid)
 LOGDEST=$LOGDIR/$LOGFILE
@@ -32,8 +42,8 @@ mkdir -p $LOGDEST
 runXapian() {
   cur=$(pwd)
 
-  cd /project/HarvestContainers/TestFramework/Containers/xapian/xapian-src/xapian
-  ./k8sclient.sh $QPS $DURATION
+  cd $XAPIAN_SRC
+  ./k8sclient.sh $QPS $DURATION $XAPIAN_IP $XAPIAN_PORT
 
   cd $cur
 }
@@ -41,8 +51,6 @@ runXapian() {
 calcUtil() {
   if [ $TYPE == "harvest" ]; then
     PROGRESS=$(get_secondary_progress)
-    #PROGRESS=$(ssh clabsvr "kubectl logs cpubully-secondary | grep -a \"Combined Progress\" | tail -n1")
-    #PROGRESS=$(ssh clabsvr "kubectl logs fibtest-secondary | grep -a \"Iterations\" | tail -n1")
   fi
   UTIL_SUMMARY=$(grep "average active cores" cpuloggersummary.log | awk '{print $NF}' | tr "\n" " ")
   echo "$LOGFILE $UTIL_SUMMARY \"$PROGRESS\""  >> $LOGDIR/summary
@@ -51,7 +59,7 @@ calcUtil() {
 calcLats() {
   cur=$(pwd)
 
-  cd /project/HarvestContainers/TestFramework/Containers/xapian/xapian-src/xapian
+  cd $XAPIAN_SRC
   cp /dev/shm/results/lats.bin $RESDIR/$LOGFILE.bin
   echo "${LOGFILE} $(python parselats_old.py $RESDIR/$LOGFILE.bin)" >> $RESDIR/summary
 
@@ -101,14 +109,6 @@ harvest() {
   startLogging idlecpu
  
   # env vars for dynamic balancer (time in us)
-#  export DEFICIT_THRESHOLD=0.50
-#  export SURPLUS_THRESHOLD=0.50
-#  export POSTDEFICIT_BUFFER_SAMPLE_RATE=1000000
-#  export POSTSURPLUS_BUFFER_SAMPLE_RATE=1000000
-#  export AGGIDLE_CORES_COUNT_THRESHOLD=2.5
-  #export LOWIDLEFREQ_THRESHOLD=0.035 #memcached
-#  export LOWIDLEFREQ_THRESHOLD=0.33 #xapian
-#  export LOW_TIC=2
   export DEFICIT_THRESHOLD=0.50
   export SURPLUS_THRESHOLD=0.50
   export DEFICIT_BUFFER_SAMPLE_RATE=500000

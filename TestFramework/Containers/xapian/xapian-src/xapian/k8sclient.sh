@@ -1,9 +1,13 @@
+#!/bin/bash
+
+# Usage: ./k8sclient.sh <qps> <duration> <server_ip> <launch_port>
+# e.g.,: ./k8sclient.sh 3000 60 192.168.10.11 31000
+
 QPS=$1
 DURATION=$2
+SVR=$3
+LAUNCHPORT=$4
 
-#SVR="localhost"
-SVR="192.168.10.11"
-LAUNCHPORT=31000
 SVRCONF="serverconf.json"
 
 WARMUPS=$((2*QPS))

@@ -11,7 +11,7 @@ secondary_pod_id() {
   #SECONDARY=fibtest-secondary
   PODFILE=${SECONDARY}_podinfo.txt
   rm -f $PODFILE
-  bash cloudlab/get_pod_info.sh $MASTER $SECONDARY
+  bash ../Tools/get_pod_info.sh $MASTER $SECONDARY
   echo "pod$(cat $PODFILE | jq -r .metadata.uid)"
 }
 
@@ -20,7 +20,6 @@ secondary() {
 
   #WARNING note duration in minutes for cpubully
   let SECONDARY_DURATION=$1/60
-  #SECONDARY_DURATION=$1 # for fibtest, x264
 
 
   curl --data "{\"duration\":\"${SECONDARY_DURATION}\",\"workers\":\"${SECONDARY_WORKERS}\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://${SECONDARY_IP}:30000
@@ -52,27 +51,11 @@ get_dedup_progress() {
 }
 
 main() {
-  #source ../bin/boilerplate.sh
-  #source ../Config/SYSTEM.sh
-
-  #loadModule idlecpu
-  #startModule idlecpu
-
-  #echo "[+] Starting logging"
-  #startLogging idlecpu
 
   SECONDARY_WORKERS=1
   ITER=1
   secondary 60
 
-  #echo "[+] Stopping modules"
-  #stopLogging idlecpu
-  #stopModule idlecpu
-
-  ##echo "[+] Retrieving logs"
-  #getLoggerLog idlecpu /tmp
-
-  #unloadModule idlecpu
 }
 
 #main
