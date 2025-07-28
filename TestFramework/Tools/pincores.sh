@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
 
-# e.g. ./pinmc.sh 0-7 clabcl0 img-dnn
+# Usage: ./pincores.sh <cpuset> <node> <app>
+# e.g. ./pincores.sh 0-7 clabcl0 xapian-primary
 
 CPUSET=$1 #format = "low-high" i.e. low,high are inclusive
-NODE=$2 #k8sclient
+NODE=$2 # where container is running
 MASTER="clabsvr"
 APP=$3
 
 if [ -z $APP ]; then
-  APP="img-dnn-primary"
+  echo "[!] Usage: ./pincores.sh <cpuset> <node> <app>"
+  echo "[!] e.g. ./pincores.sh 0-7 clabcl0 xapian-primary"
+  exit 1
 fi
 
 PODFILE=${APP}_podinfo.txt
+rm -f $PODFILE
 if [ ! -f $PODFILE ]; then
   bash get_pod_info.sh $MASTER $APP
   sz=$(wc -c $PODFILE | awk '{print $1}')

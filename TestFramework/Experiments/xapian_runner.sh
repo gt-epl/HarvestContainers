@@ -10,7 +10,7 @@ MASTER="clabsvr" # used by secondary.sh
 XAPIAN_IP="192.168.10.11"
 XAPIAN_PORT="31000"
 XAPIAN_ALIAS="clabcl1"
-XAPIAN_SRC="~/HarvestContainers/TestFramework/Containers/xapian/xapian-src/xapian"
+XAPIAN_SRC="../Containers/xapian/xapian-src/xapian"
 
 ITER=$1
 SECONDARY_WORKERS=$2

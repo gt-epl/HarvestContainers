@@ -33,18 +33,12 @@ fi
 
 if [ "${ENV_TYPE}" == "CLOUDLAB" ]
 then
-  WORKING_DIR="/project/HarvestContainers/TestFramework"
+  WORKING_DIR="${HOME}/HarvestContainers/TestFramework"
   CPULIST="2,4,6,8,10,12,14,16"
   SECONDARY_CPULIST="18"
-  #MONITOR_BINDCPU="26"
-  #BALANCER_BINDCPU="28"
-  #LISTENER_BINDCPU="30"
-  # This ensures Monitor/Balancer/Listener are on NUMA node1
   MONITOR_BINDCPU="24"
   BALANCER_BINDCPU="26"
   LISTENER_BINDCPU="28"
-  CORE_RANGE="1-8" #unused for k8s cloudlab setup
-  NUM_CORES="8"    #unused for k8s cloudlab setup
   CPU_FREQ="2600000"
 fi
 
