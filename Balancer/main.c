@@ -241,8 +241,8 @@ void pollIdleCPU(void)
     /* TODO: Need to initialize timestamps in ALL Primary containers. For now
      * we have hardcoded container c1-c3, so we'll just init those */
     clock_gettime(CLOCK_MONOTONIC_RAW, &c1->prev_sample_timestamp);
-    clock_gettime(CLOCK_MONOTONIC_RAW, &c2->prev_sample_timestamp);
-    clock_gettime(CLOCK_MONOTONIC_RAW, &c3->prev_sample_timestamp);
+    // clock_gettime(CLOCK_MONOTONIC_RAW, &c2->prev_sample_timestamp);
+    // clock_gettime(CLOCK_MONOTONIC_RAW, &c3->prev_sample_timestamp);
 
     /* Begin main sample/balance loop */
     while (1) {
@@ -379,90 +379,90 @@ int initializeCtrInfo()
     c1->SAMPLE_TYPE = 0;
     c1->SpareCoresToAllocate = 0;
 
-    c2->NUMCPUS = 8;
-    c2->cpuList[0] = 1;
-    c2->cpuList[1] = 3;
-    c2->cpuList[2] = 5;
-    c2->cpuList[3] = 7;
-    c2->cpuList[4] = 9;
-    c2->cpuList[5] = 11;
-    c2->cpuList[6] = 13;
-    c2->cpuList[7] = 15;
-    //c2->LOWIDLEFREQ_THRESHOLD = 0.008712; //50k, tic=4
-    c2->LOWIDLEFREQ_THRESHOLD = 0.003; //100k, tic=7
-    c2->LOW_TIC = 2;
-    c2->targetIdleCores = 7;
-    c2->static_targetIdleCores = 4;
+    // c2->NUMCPUS = 8;
+    // c2->cpuList[0] = 1;
+    // c2->cpuList[1] = 3;
+    // c2->cpuList[2] = 5;
+    // c2->cpuList[3] = 7;
+    // c2->cpuList[4] = 9;
+    // c2->cpuList[5] = 11;
+    // c2->cpuList[6] = 13;
+    // c2->cpuList[7] = 15;
+    // //c2->LOWIDLEFREQ_THRESHOLD = 0.008712; //50k, tic=4
+    // c2->LOWIDLEFREQ_THRESHOLD = 0.003; //100k, tic=7
+    // c2->LOW_TIC = 2;
+    // c2->targetIdleCores = 7;
+    // c2->static_targetIdleCores = 4;
 
-    c2->totalEligibleCores = c2->NUMCPUS;
-    c2->maxSecondaryCores = c2->totalEligibleCores - c2->targetIdleCores;
-    c2->minSecondaryCores = 0;
+    // c2->totalEligibleCores = c2->NUMCPUS;
+    // c2->maxSecondaryCores = c2->totalEligibleCores - c2->targetIdleCores;
+    // c2->minSecondaryCores = 0;
 
-    c2->CoresAllocatedToSecondary = 0;
+    // c2->CoresAllocatedToSecondary = 0;
 
-    c2->prev_idleCoresCount = 0;
-    c2->idleCoresCount = 0;
-    c2->prev_targetIdleCores = 0;
-    c2->coreDifference = 0;
-    c2->this_sample_time = 0;
-    c2->total_sample_time = 0;
-    c2->surplus_sample_time = 0;
-    c2->deficit_sample_time = 0;
-    c2->deficit_aggIdleCoresCount = 0;
-    c2->surplus_aggIdleCoresCount = 0;
-    c2->aggIdleCoresCount = 0;
-    c2->num_surplus_observed = 0;
-    c2->num_deficit_observed = 0;
-    c2->time_spent_surplus = 0;
-    c2->time_spent_deficit = 0;
-    c2->num_samples_taken = 0;
-    c2->deficit_weight = 0.0;
-    c2->surplus_weight = 0.0;
-    c2->lowIdleFreq = 0;
-    c2->SAMPLE_TYPE = 0;
-    c2->SpareCoresToAllocate = 0;
+    // c2->prev_idleCoresCount = 0;
+    // c2->idleCoresCount = 0;
+    // c2->prev_targetIdleCores = 0;
+    // c2->coreDifference = 0;
+    // c2->this_sample_time = 0;
+    // c2->total_sample_time = 0;
+    // c2->surplus_sample_time = 0;
+    // c2->deficit_sample_time = 0;
+    // c2->deficit_aggIdleCoresCount = 0;
+    // c2->surplus_aggIdleCoresCount = 0;
+    // c2->aggIdleCoresCount = 0;
+    // c2->num_surplus_observed = 0;
+    // c2->num_deficit_observed = 0;
+    // c2->time_spent_surplus = 0;
+    // c2->time_spent_deficit = 0;
+    // c2->num_samples_taken = 0;
+    // c2->deficit_weight = 0.0;
+    // c2->surplus_weight = 0.0;
+    // c2->lowIdleFreq = 0;
+    // c2->SAMPLE_TYPE = 0;
+    // c2->SpareCoresToAllocate = 0;
 
-    c3->NUMCPUS = 8;
-    c3->cpuList[0] = 0;
-    c3->cpuList[1] = 18;
-    c3->cpuList[2] = 20;
-    c3->cpuList[3] = 22;
-    c3->cpuList[4] = 24;
-    c3->cpuList[5] = 26;
-    c3->cpuList[6] = 28;
-    c3->cpuList[7] = 30;
-    c3->LOWIDLEFREQ_THRESHOLD = 0.33;
-    c3->LOW_TIC = 2;
-    c3->targetIdleCores = 3;
-    c3->static_targetIdleCores = 3;
+    // c3->NUMCPUS = 8;
+    // c3->cpuList[0] = 0;
+    // c3->cpuList[1] = 18;
+    // c3->cpuList[2] = 20;
+    // c3->cpuList[3] = 22;
+    // c3->cpuList[4] = 24;
+    // c3->cpuList[5] = 26;
+    // c3->cpuList[6] = 28;
+    // c3->cpuList[7] = 30;
+    // c3->LOWIDLEFREQ_THRESHOLD = 0.33;
+    // c3->LOW_TIC = 2;
+    // c3->targetIdleCores = 3;
+    // c3->static_targetIdleCores = 3;
 
-    c3->totalEligibleCores = c3->NUMCPUS;
-    c3->maxSecondaryCores = c3->totalEligibleCores - c3->targetIdleCores;
-    c3->minSecondaryCores = 0;
+    // c3->totalEligibleCores = c3->NUMCPUS;
+    // c3->maxSecondaryCores = c3->totalEligibleCores - c3->targetIdleCores;
+    // c3->minSecondaryCores = 0;
 
-    c3->CoresAllocatedToSecondary = 0;
+    // c3->CoresAllocatedToSecondary = 0;
 
-    c3->prev_idleCoresCount = 0;
-    c3->idleCoresCount = 0;
-    c3->prev_targetIdleCores = 0;
-    c3->coreDifference = 0;
-    c3->this_sample_time = 0;
-    c3->total_sample_time = 0;
-    c3->surplus_sample_time = 0;
-    c3->deficit_sample_time = 0;
-    c3->deficit_aggIdleCoresCount = 0;
-    c3->surplus_aggIdleCoresCount = 0;
-    c3->aggIdleCoresCount = 0;
-    c3->num_surplus_observed = 0;
-    c3->num_deficit_observed = 0;
-    c3->time_spent_surplus = 0;
-    c3->time_spent_deficit = 0;
-    c3->num_samples_taken = 0;
-    c3->deficit_weight = 0.0;
-    c3->surplus_weight = 0.0;
-    c3->lowIdleFreq = 0;
-    c3->SAMPLE_TYPE = 0;
-    c3->SpareCoresToAllocate = 0;
+    // c3->prev_idleCoresCount = 0;
+    // c3->idleCoresCount = 0;
+    // c3->prev_targetIdleCores = 0;
+    // c3->coreDifference = 0;
+    // c3->this_sample_time = 0;
+    // c3->total_sample_time = 0;
+    // c3->surplus_sample_time = 0;
+    // c3->deficit_sample_time = 0;
+    // c3->deficit_aggIdleCoresCount = 0;
+    // c3->surplus_aggIdleCoresCount = 0;
+    // c3->aggIdleCoresCount = 0;
+    // c3->num_surplus_observed = 0;
+    // c3->num_deficit_observed = 0;
+    // c3->time_spent_surplus = 0;
+    // c3->time_spent_deficit = 0;
+    // c3->num_samples_taken = 0;
+    // c3->deficit_weight = 0.0;
+    // c3->surplus_weight = 0.0;
+    // c3->lowIdleFreq = 0;
+    // c3->SAMPLE_TYPE = 0;
+    // c3->SpareCoresToAllocate = 0;
 
     return 0;
 }
@@ -589,8 +589,8 @@ int main(int argc, char **argv)
         targetIdleCores, idleCpuStats->num_secondary_cores);
     
     printf("   [!] [Balancer] Primary container c1 targetIdleCores=%d\n", c1->targetIdleCores);
-    printf("   [!] [Balancer] Primary container c2 targetIdleCores=%d\n", c2->targetIdleCores);
-    printf("   [!] [Balancer] Primary container c3 targetIdleCores=%d\n", c3->targetIdleCores);
+    // printf("   [!] [Balancer] Primary container c2 targetIdleCores=%d\n", c2->targetIdleCores);
+    // printf("   [!] [Balancer] Primary container c3 targetIdleCores=%d\n", c3->targetIdleCores);
     #ifndef DYNAMIC_ENABLED
     printf("   [!] [Balancer] Dynamic is OFF\n");
     #else

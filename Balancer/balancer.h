@@ -121,8 +121,8 @@ struct ctr_info {
 };
 
 struct ctr_info *c1;
-struct ctr_info *c2;
-struct ctr_info *c3;
+// struct ctr_info *c2;
+// struct ctr_info *c3;
 
 /* Keeps track of how many cores we've added to affinity_list while calling
  * ComputeAffinityMask() for each Primary container */
