@@ -268,8 +268,8 @@ void pollIdleCPU(void)
         } else continue;
 
         needs_rebalance += evaluatePrimaryContainer(c1);
-        needs_rebalance += evaluatePrimaryContainer(c2);
-        needs_rebalance += evaluatePrimaryContainer(c3);
+        // needs_rebalance += evaluatePrimaryContainer(c2);
+        // needs_rebalance += evaluatePrimaryContainer(c3);
 
         /* Evaluate this for each Primary container. We need to set the affinity
          * mask from each Primary's pool of cores, but not apply that mask until
@@ -478,8 +478,8 @@ int main(int argc, char **argv)
 
     /* Experimental: set up structs for Primary containers */
     c1 = malloc(sizeof(struct ctr_info));
-    c2 = malloc(sizeof(struct ctr_info));
-    c3 = malloc(sizeof(struct ctr_info));
+    // c2 = malloc(sizeof(struct ctr_info));
+    // c3 = malloc(sizeof(struct ctr_info));
     initializeCtrInfo();
 
      /* Initialize harvest_cores */
