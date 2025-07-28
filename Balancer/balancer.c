@@ -127,8 +127,8 @@ int AllocateCoresToSecondary()
      * the new affinity mask based on the results
      * NOTE: FOR NOW WE JUST CALL THIS FOR c1-c3 */
     ComputeSecondaryAffinityMask(c1);
-    ComputeSecondaryAffinityMask(c2);
-    ComputeSecondaryAffinityMask(c3);
+    //ComputeSecondaryAffinityMask(c2);
+    //ComputeSecondaryAffinityMask(c3);
 
     if (currSecondaryCoreCount == 0) {
         rebalanceAction = 3;
