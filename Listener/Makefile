@@ -1,15 +1,11 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -O2 -I.
-LIBS=-lpthread
-DEPS=$(wildcard *.h)
-SRC=listener.c getpids.c
+#CFLAGS=-I.
+#LIBS=-lpthread
+#DEPS=$(wildcard *.h)
+#SRC=CStates.cpp  Config.cpp  Dispatcher.cpp  Worker.cpp  main.cpp  stats.cpp  stdafx.cpp
 
-all: $(DEPS) listener
-
-listener: $(SRC)
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+all:
+	$(CC) -o gcc -o listener listener.c getpids.c -lpthread
 
 clean:
 	rm -f ./listener
-
-.PHONY: all clean

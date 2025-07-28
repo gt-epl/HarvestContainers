@@ -1,17 +1,12 @@
-#ifndef LISTENER_H
-#define LISTENER_H
-
-#include <pthread.h>
 #include <dirent.h>
 
-#define MAX_PODS 64
-#define MAX_POD_ID_LEN 37
+char cpuList[64];
 
-extern int listenerControl;
+int listenerControl;
 
-// extern char podList[MAX_PODS][MAX_POD_ID_LEN];
+char podList[64][37];
 
-extern pthread_t conn_handler_thread;
+pthread_t conn_handler_thread;
 
 struct ctr_info {
   int parent_pid;
@@ -31,18 +26,42 @@ struct idleStats {
 
     int balancerControl;
     int updatingPids;
-    
+
+    /* --- Begin Rebalance Vars --- */
     pid_t secondary_pid_list[128];
     int nr_secondary_ctrs;
     int needs_rebalance;
-
+    /* Just a list of CPUs to set */
     int affinity_list[64];
     int num_affinity;
     int num_secondary_cores;
     int secondary_cores_list[64];
     struct ctr_info secondary_ctrs[64];
+    /* --- End Rebalance Vars --- */
 };
 
-extern struct idleStats *idleCpuStats;
+/*
+struct idleStats {
+    int numIdle;
+    unsigned long long mask;
+    unsigned long long prev_irq_times[64];
+    unsigned long long curr_irq_times[64];
+    unsigned long long hist_irq_times[64];
+    int samples;
+    int irq_samples;
+    int update_irq;
 
-#endif // LISTENER_H
+    int balancerControl;
+    int updatingPids;
+
+    pid_t secondary_pid_list[128];
+    int num_secondary;
+    int needs_rebalance;
+    int affinity_list[64];
+    int num_affinity;
+    int num_secondary_cores;
+    int secondary_cores_list[64];
+};
+*/
+
+struct idleStats *idleCpuStats;

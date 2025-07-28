@@ -1,14 +1,10 @@
-#ifndef GETPIDS_H
-#define GETPIDS_H
-
 #include <sched.h>
-#include <stdlib.h>
 
-#define MAX_SECONDARY_PIDS 128
+pid_t curr_secondary_pids[128];
 
-extern pid_t curr_secondary_pids[MAX_SECONDARY_PIDS];
-
-/* Get all containers inside given pod ID */
+int parsePodList(char *podListString);
 int get_containers(char *pod_id);
-
-#endif // GETPIDS_H
+int copy_secondary_pids();
+int compare_pid_lists();
+int updatePodList(char *pod_id);
+int check_for_pids();
