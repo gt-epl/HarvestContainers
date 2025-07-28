@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## TODO: this script is not used anymore and can be removed.
+
 source ../Config/SYSTEM.sh
 
 echo "[+] Retrieving kernel"
@@ -12,6 +14,7 @@ rm kernel.tgz
 
 echo "[+] Retrieving binaries"
 # --- Begin Retrieve Binaries ---
+
 cd ${WORKING_DIR}/bin
 
 # BALANCER
