@@ -29,7 +29,7 @@ mkdir -p $RESDIR
 LOGFILE=$(cat /proc/sys/kernel/random/uuid)
 LOGDEST=$LOGDIR/$LOGFILE
 
-if [ ! -f "config.out" ]; then
+if [ ! -f "xapian_config.out" ]; then
   echo "uuid type iter sec_workers target_idle qps duration metadata" > config.out
   echo "uuid mean p50 p90 p95 p99 min max" > $RESDIR/summary
   echo "uuid event-weighted time-weighted progress" > $LOGDIR/summary
@@ -53,7 +53,7 @@ calcUtil() {
     PROGRESS=$(get_secondary_progress)
   fi
   UTIL_SUMMARY=$(grep "average active cores" cpuloggersummary.log | awk '{print $NF}' | tr "\n" " ")
-  echo "$LOGFILE $UTIL_SUMMARY \"$PROGRESS\""  >> $LOGDIR/summary
+  echo "$LOGFILE $UTIL_SUMMARY\"$PROGRESS\""  >> $LOGDIR/summary
 }
 
 calcLats() {

@@ -18,3 +18,5 @@ done
 
 end_time=$(date +%s)
 echo "[+] xapian runtime: $((end_time - start_time)) seconds"
+
+mv xapian_config.out /mnt/extra/xapian_config.out
