@@ -1,13 +1,25 @@
 #!/bin/bash
 
-
 # SSH into the clabcl1, run a command, and exit (EOF)
 ssh -o StrictHostKeyChecking=no clabcl1 << EOF
 echo "[+] Connected to clabcl1. Running setup commands..."
 
 pip install scipy
+
+echo "[+] Setting up xapian-primary"
 docker pull asarma31/xapian-primary:latest
+
+echo "[+] Setting up xapian-primary inputs"
+cd /mnt/extra
+wget https://tailbench.csail.mit.edu/tailbench.inputs.tgz
+tar -xvf tailbench.inputs.tgz tailbench.inputs/xapian
+sudo mkdir -p /dev/shm/xapian.inputs && sudo cp -r tailbench.inputs/xapian /dev/shm/xapian.inputs/
+
+echo "[+] Setting up cpubully-secondary"
 docker pull asarma31/cpubully:latest
+
+echo "[+] Setting up memcached-primary"
+docker pull asarma31/memcached-primary:latest
 
 echo "[+] clabcl1 setup complete."
 exit
@@ -19,6 +31,18 @@ ssh -o StrictHostKeyChecking=no clabsvr << EOF
 echo "[+] Connected to server. Running setup commands..."
 pip install scipy
 
+echo "[+] Setting up memcached-primary"
+cd ~/HarvestContainers/TestFramework/Containers/memcached/
+kubectl apply -f memcached-primary_pod.yaml
+kubectl apply -f memcached-primary_svc.yaml
+cd mutilate
+docker pull asarma31/mutilate:latest
+kubectl apply -f mutilate_pod.yaml
+kubectl apply -f mutilate_svc.yaml
+
+# load data
+echo "[+] Load memcached-primary dataset"
+curl --data "{\"memcached_server\":\"192.168.10.11:31212\"}" --header "Content-Type: application/json" http://192.168.10.10:32003/load
 
 echo "[+] Setting up xapian-primary"
 cd ~/HarvestContainers/TestFramework/Containers/xapian/
@@ -29,7 +53,6 @@ echo "[+] Setting up cpubully-secondary"
 cd ~/HarvestContainers/TestFramework/Containers/CPUBully/
 kubectl apply -f cpubully-secondary_pod.yaml
 kubectl apply -f cpubully-secondary_svc.yaml
-
 
 echo "[+] clabsvr setup complete."
 exit

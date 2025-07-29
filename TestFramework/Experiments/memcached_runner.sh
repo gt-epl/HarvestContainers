@@ -42,7 +42,7 @@ runMemcached() {
 
   TRIAL_NAME="$LOGFILE"
 
-  curl --data "{\"trial\":\"${TRIAL_NAME}\",\"qps\":\"${QPS}\",\"duration\":\"${DURATION}\",\"memcached_server\":\"${MEMCACHED_HOST}\"}" --header "Content-Type: application/json" http://${MUTILATE_HOST} 
+  curl --data "{\"trial\":\"${TRIAL_NAME}\",\"qps\":\"${QPS}\",\"duration\":\"${DURATION}\",\"memcached_server\":\"${MEMCACHED_HOST}\"}" --header "Content-Type: application/json" http://${MUTILATE_HOST}/run 
 } 
 
 calcUtil() {
