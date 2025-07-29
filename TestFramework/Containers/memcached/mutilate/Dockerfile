@@ -22,7 +22,6 @@ RUN apt-get update && apt-get install -y \
     python2.7 \
     python2.7-dev \
     build-essential \
-
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
