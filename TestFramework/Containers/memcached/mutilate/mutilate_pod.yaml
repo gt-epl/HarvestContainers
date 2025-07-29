@@ -22,6 +22,15 @@ spec:
         - name: mutilate
           containerPort: 20003
           protocol: TCP
+      env:
+        - name: MUTILATE_THREADS
+          value: "8"
+        - name: MUTILATE_CONNS
+          value: "1"
+        - name: MUTILATE_DURATION
+          value: "60"
+        - name: MEMCACHED_SERVER
+          value: "127.0.0.1"
       volumeMounts:
         - name: mutilate-results
           mountPath: /bin/results

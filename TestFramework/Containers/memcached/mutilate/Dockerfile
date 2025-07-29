@@ -4,7 +4,6 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Set mutilate configuration as environment variables
-ENV MUTILATE_CORE_RANGE="8-15"
 ENV MUTILATE_THREADS="8"
 ENV MUTILATE_CONNS="1"
 ENV MUTILATE_DURATION="60"
@@ -41,7 +40,6 @@ RUN chmod +x /app/setup_mutilate.sh && \
 
 RUN rm -rf /app
 
-
 # Copy the launcher and run script
 COPY mutilate_launcher.py /bin/
 COPY run_mutilate.sh /bin/
@@ -50,5 +48,4 @@ RUN chmod +x /bin/run_mutilate.sh
 # Expose the port used by mutilate_launcher.py
 EXPOSE 20003
 
-# Set entrypoint to run_mutilate.sh as requested
-ENTRYPOINT ["./run_mutilate.sh"]
+ENTRYPOINT ["python3", "/bin/mutilate_launcher.py"]

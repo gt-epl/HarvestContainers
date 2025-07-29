@@ -40,9 +40,10 @@ class Server(BaseHTTPRequestHandler):
         trial_name = message['trial']
         num_qps = message['qps']
         duration = message['duration']
+        memcached_server = message['memcached_server']
 
         # Run cpubully with posted parameters
-        subprocess.run(["./run_mutilate.sh", trial_name, num_qps, duration])
+        subprocess.run(["./run_mutilate.sh", trial_name, num_qps, duration, memcached_server])
 
 def run(server_class=HTTPServer, handler_class=Server, port=20003):
     server_address = ('', port)
