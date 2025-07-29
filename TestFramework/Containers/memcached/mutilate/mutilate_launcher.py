@@ -47,7 +47,26 @@ class Server(BaseHTTPRequestHandler):
             subprocess.run(["./run_mutilate.sh", trial_name, num_qps, duration, memcached_server])
 
         elif self.path == "/load":
-            subprocess.run(["./load.sh"])
+            
+
+            ctype, pdict = cgi.parse_header(self.headers.get('content-type'))
+
+            # refuse to receive non-json content
+            if ctype != 'application/json':
+                self.send_response(400)
+                self.end_headers()
+                return
+
+            # read the message and convert it into a python dictionary
+            length = int(self.headers.get('content-length'))
+            message = json.loads(self.rfile.read(length))
+
+            # send the message back
+            self._set_headers()
+            self.wfile.write(json.dumps(message).encode())
+
+            memcached_server = message['memcached_server']
+            subprocess.run(["./load.sh", memcached_server])
 
         else:
             self.send_response(404)
