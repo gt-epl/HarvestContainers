@@ -22,6 +22,8 @@ class Server(BaseHTTPRequestHandler):
 
     def do_POST(self):
         if self.path == "/run":
+            print("Received request to run")
+
             ctype, pdict = cgi.parse_header(self.headers.get('content-type'))
 
             # refuse to receive non-json content
@@ -47,7 +49,7 @@ class Server(BaseHTTPRequestHandler):
             subprocess.run(["./run_mutilate.sh", trial_name, num_qps, duration, memcached_server])
 
         elif self.path == "/load":
-            
+            print("Received request to load")
 
             ctype, pdict = cgi.parse_header(self.headers.get('content-type'))
 
