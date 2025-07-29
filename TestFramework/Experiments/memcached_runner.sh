@@ -1,21 +1,29 @@
 #!/bin/bash
 
-WORKING_DIR=/project/HarvestContainers/TestFramework
-source ${WORKING_DIR}/bin/boilerplate.sh
-source ${WORKING_DIR}/Config/SYSTEM.sh
+# Usage: ./memcached_runner.sh <iteration> <secondary_workers> <target_idle_cores> <qps> <duration> <type>
+# e.g.,: ./memcached_runner.sh 1 1 1 10000 60 baseline
+
+source ../bin/boilerplate.sh
+source ../Config/SYSTEM.sh
 source ./secondary.sh
 
-MASTER="clabsvr"
+MUTILATE_ALIAS="clabsvr"
+MUTILATE_HOST="192.168.10.10:32003"
+MEMCACHED_HOST="192.168.10.11:31212"
+
 ITER=$1
 SECONDARY_WORKERS=$2
 TARGET_IDLE_CORES=$3
 QPS=$4
 DURATION=$5
-LOGDIR="/mnt/extra/logs"
-
 TYPE="$6"
+
 META="mutilate"
-#e.g. ./memcached_runner.sh 1 1 1 3000 60
+LOGDIR="/mnt/extra/logs/memcached"
+RESDIR="/mnt/extra/results/memcached"
+
+mkdir -p $LOGDIR
+
 
 LOGFILE=$(cat /proc/sys/kernel/random/uuid)
 LOGDEST=$LOGDIR/$LOGFILE
@@ -32,37 +40,32 @@ runMemcached() {
   # Start mutilate
   echo "[+] Run Memcached(mutilate)"
 
-  MUTILATE_SVR="192.168.10.12:20003"
   TRIAL_NAME="$LOGFILE"
 
-  curl --data "{\"trial\":\"${TRIAL_NAME}\",\"qps\":\"${QPS}\",\"duration\":\"${DURATION}\"}" --header "Content-Type: application/json" http://${MUTILATE_SVR} 
+  curl --data "{\"trial\":\"${TRIAL_NAME}\",\"qps\":\"${QPS}\",\"duration\":\"${DURATION}\",\"memcached_server\":\"${MEMCACHED_HOST}\"}" --header "Content-Type: application/json" http://${MUTILATE_HOST} 
 } 
 
 calcUtil() {
   if [ $TYPE == "harvest" ]; then
     PROGRESS=$(get_secondary_progress)
-    #PROGRESS=$(ssh clabsvr "kubectl logs cpubully-secondary | grep -a \"Combined Progress\" | tail -n1")
-    #PROGRESS=$(ssh clabsvr "kubectl logs fibtest-secondary | grep -a \"Iterations\" | tail -n1")
   fi
   UTIL_SUMMARY=$(grep "average active cores" cpuloggersummary.log | awk '{print $NF}' | tr "\n" " ")
-  echo "$LOGFILE $UTIL_SUMMARY \"$PROGRESS\""  >> $LOGDIR/summary
+  echo "$LOGFILE $UTIL_SUMMARY\"$PROGRESS\""  >> $LOGDIR/summary
 }
 
 calcLats() {
-ssh clabcl1 bash <<EOF
+ssh $MUTILATE_ALIAS bash <<EOF
 
-
-  cd $WORKING_DIR/Results/Memcached/
+  cd $RESDIR
 
   if [ ! -f "summary" ]; then
-    echo "uuid mean min p90 p95 p99 achieved_qps" > summary
+    echo "uuid mean min p90 p95 p99 achieved_qps" | sudo tee summary
   fi
 
   ACHQPS=\$(cat $LOGFILE/stdout.log | grep "Total QPS" | awk '{print \$4}')
-
   SUMMARY=\$(cat $LOGFILE/stdout.log | grep read | awk '{print \$2" "\$4" "\$7" "\$8" "\$9}')
   
-  echo "${LOGFILE} \${SUMMARY} \${ACHQPS}" >> summary
+  echo "${LOGFILE} \${SUMMARY} \${ACHQPS}" | sudo tee -a summary
 EOF
 
 }
@@ -108,20 +111,11 @@ harvest() {
   startLogging idlecpu
  
   # env vars for dynamic balancer (time in us)
-  #export DEFICIT_THRESHOLD=0.50
-  #export SURPLUS_THRESHOLD=0.50
-  #export POSTDEFICIT_BUFFER_SAMPLE_RATE=1000000
-  #export POSTSURPLUS_BUFFER_SAMPLE_RATE=1000000
-  #export AGGIDLE_CORES_COUNT_THRESHOLD=2.5
-  #export LOWIDLEFREQ_THRESHOLD=0.0483
-  #export LOW_TIC=2
   export DEFICIT_THRESHOLD=0.50
   export SURPLUS_THRESHOLD=0.50
   export DEFICIT_BUFFER_SAMPLE_RATE=500000
   export SURPLUS_BUFFER_SAMPLE_RATE=1000000
   export AGGIDLE_CORES_COUNT_THRESHOLD=2.5
-  #export LOWIDLEFREQ_THRESHOLD=0.0104
-  #export LOWIDLEFREQ_THRESHOLD=0.008712 #50k, tic4
   export LOWIDLEFREQ_THRESHOLD=0.003 #150k, tic7
   export LOW_TIC=2
 
