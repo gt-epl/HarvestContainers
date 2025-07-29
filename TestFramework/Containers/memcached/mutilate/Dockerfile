@@ -24,28 +24,28 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
-WORKDIR /bin
+WORKDIR /app
 
 # Create directory structure
-RUN mkdir -p /bin && \
-    mkdir -p /app && \
-    mkdir -p /bin/results
+RUN mkdir -p /app/workspace && \
+    mkdir -p /app/results
 
 # Copy mutilate setup script and run it
-COPY setup_mutilate.sh /app/
-RUN chmod +x /app/setup_mutilate.sh && \
-    cd /app && \
-    WORKING_DIR=/app ./setup_mutilate.sh && \
-    cp /app/mutilate/mutilate /bin/mutilate
-
-RUN rm -rf /app
+COPY setup_mutilate.sh /app/workspace/
+RUN chmod +x /app/workspace/setup_mutilate.sh && \
+    cd /app/workspace && \
+    WORKING_DIR=/app/workspace ./setup_mutilate.sh && \
+    cp /app/workspace/mutilate/mutilate /app/mutilate
 
 # Copy the launcher and run script
-COPY mutilate_launcher.py /bin/
-COPY run_mutilate.sh /bin/
-RUN chmod +x /bin/run_mutilate.sh
+COPY mutilate_launcher.py /app/
+COPY run_mutilate.sh /app/
+COPY load.sh /app/
+
+RUN chmod +x /app/run_mutilate.sh && \
+    chmod +x /app/load.sh
 
 # Expose the port used by mutilate_launcher.py
 EXPOSE 20003
 
-ENTRYPOINT ["python3", "/bin/mutilate_launcher.py"]
+ENTRYPOINT ["python3", "/app/mutilate_launcher.py"]

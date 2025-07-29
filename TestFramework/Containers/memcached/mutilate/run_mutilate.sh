@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKING_DIR=/bin
+WORKING_DIR=/app
 
 if [ -z "$1" ]
 then

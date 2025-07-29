@@ -33,7 +33,7 @@ spec:
           value: "127.0.0.1"
       volumeMounts:
         - name: mutilate-results
-          mountPath: /bin/results
+          mountPath: /app/results
   volumes:
     - name: mutilate-results
       hostPath:
