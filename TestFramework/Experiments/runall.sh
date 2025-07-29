@@ -36,6 +36,6 @@ for((i=start; i<=end; i++)); do
 done
 
 end_time=$(date +%s)
-echo "[+] xapian runtime: $((end_time - start_time)) seconds"
+echo "[+] memcached runtime: $((end_time - start_time)) seconds"
 
-mv xapian_config.out /mnt/extra/xapian_config.out
+mv memcached_config.out /mnt/extra/memcached_config.out
