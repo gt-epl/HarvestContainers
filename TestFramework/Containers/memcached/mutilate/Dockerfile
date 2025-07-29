@@ -44,8 +44,8 @@ RUN rm -rf /app
 
 # Copy the launcher and run script
 COPY mutilate_launcher.py /bin/
-COPY run_mutilate.sh /app/
-RUN chmod +x /app/run_mutilate.sh
+COPY run_mutilate.sh /bin/
+RUN chmod +x /bin/run_mutilate.sh
 
 # Expose the port used by mutilate_launcher.py
 EXPOSE 20003
