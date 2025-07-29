@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKING_DIR=/app
+WORKING_DIR=/bin
 
 if [ -z "$1" ]
 then
@@ -22,14 +22,14 @@ MEMCACHED_SERVER="192.168.10.11:31212"
 MUTILATE_RECORDS="1000000"
 #MUTILATE_DURATION="120"
 
-OUTPUT_DIR="${WORKING_DIR}/Results/Memcached/${TRIAL}"
+OUTPUT_DIR="${WORKING_DIR}/results/${TRIAL}"
 mkdir -p ${OUTPUT_DIR}
 
 echo "[+] Benchmarking reads from memcached for ${TRIAL}, ${MUTILATE_QPS}, ${MUTILATE_DURATION}"
 
 cd ${WORKING_DIR}
 
-${WORKING_DIR}/bin/mutilate -s ${MEMCACHED_SERVER} \
+${WORKING_DIR}/mutilate -s ${MEMCACHED_SERVER} \
                             --noload -K fb_key -V fb_value \
                             -r ${MUTILATE_RECORDS} -i fb_ia \
                             -T ${MUTILATE_THREADS} -c ${MUTILATE_CONNS} \

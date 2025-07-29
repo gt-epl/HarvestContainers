@@ -19,24 +19,32 @@ RUN apt-get update && apt-get install -y \
     libzmq3-dev \
     python3 \
     python3-pip \
+    python2.7 \
+    python2.7-dev \
     build-essential \
+
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
-WORKDIR /app
+WORKDIR /bin
 
 # Create directory structure
-RUN mkdir -p /app/bin \
-    && mkdir -p /app/Results
+RUN mkdir -p /bin && \
+    mkdir -p /app && \
+    mkdir -p /bin/results
 
 # Copy mutilate setup script and run it
 COPY setup_mutilate.sh /app/
 RUN chmod +x /app/setup_mutilate.sh && \
     cd /app && \
-    WORKING_DIR=/app ./setup_mutilate.sh
+    WORKING_DIR=/app ./setup_mutilate.sh && \
+    cp /app/mutilate/mutilate /bin/mutilate
+
+RUN rm -rf /app
+
 
 # Copy the launcher and run script
-COPY mutilate_launcher.py /app/
+COPY mutilate_launcher.py /bin/
 COPY run_mutilate.sh /app/
 RUN chmod +x /app/run_mutilate.sh
 
