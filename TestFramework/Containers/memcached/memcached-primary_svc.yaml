@@ -9,6 +9,6 @@ spec:
   ports:
     - port: 11212
       nodePort: 31212
-      name: memcached-server-one
+      name: memcached
   selector:
-    name: memcached-server-one
+    name: memcached-server

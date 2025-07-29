@@ -1,9 +1,6 @@
 #!/bin/bash
 
-source /project/HarvestContainers/TestFramework/bin/boilerplate.sh
-source /project/HarvestContainers/TestFramework/Config/MUTILATE.sh
-
-WORKING_DIR=/project/HarvestContainers/TestFramework
+WORKING_DIR=/app
 
 if [ -z "$1" ]
 then
@@ -30,7 +27,7 @@ mkdir -p ${OUTPUT_DIR}
 
 echo "[+] Benchmarking reads from memcached for ${TRIAL}, ${MUTILATE_QPS}, ${MUTILATE_DURATION}"
 
-cd ${WORKING_DIR}/Containers/memcached/
+cd ${WORKING_DIR}
 
 ${WORKING_DIR}/bin/mutilate -s ${MEMCACHED_SERVER} \
                             --noload -K fb_key -V fb_value \
