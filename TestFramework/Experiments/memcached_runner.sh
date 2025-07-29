@@ -28,12 +28,14 @@ mkdir -p $LOGDIR
 LOGFILE=$(cat /proc/sys/kernel/random/uuid)
 LOGDEST=$LOGDIR/$LOGFILE
 
-if [ ! -f "config.out" ]; then
-  echo "uuid type iter sec_workers target_idle qps duration metadata" > config.out
+CFGFILE="memcached_config.out"
+
+if [ ! -f "$CFGFILE" ]; then
+  echo "uuid type iter sec_workers target_idle qps duration metadata" > $CFGFILE
   echo "uuid event-weighted time-weighted progress" > $LOGDIR/summary
 fi
 
-echo "${LOGFILE} ${TYPE} ${ITER} ${SECONDARY_WORKERS} ${TARGET_IDLE_CORES} ${QPS} ${DURATION} ${META}" >> config.out
+echo "${LOGFILE} ${TYPE} ${ITER} ${SECONDARY_WORKERS} ${TARGET_IDLE_CORES} ${QPS} ${DURATION} ${META}" >> $CFGFILE
 mkdir -p $LOGDEST
 
 runMemcached() {

@@ -10,9 +10,28 @@ dur=60
 start_time=$(date +%s)
 
 for((i=start; i<=end; i++)); do
-  for qps in 500 1000 1500 2000 2500 3000 3500 4000; do
+  for ((qps=500; qps<=4000; qps+=500)); do
     ./xapian_runner.sh $i 1 1 $qps $dur baseline
     ./xapian_runner.sh $i 9 7 $qps $dur harvest
+  done 
+done
+
+end_time=$(date +%s)
+echo "[+] xapian runtime: $((end_time - start_time)) seconds"
+
+mv xapian_config.out /mnt/extra/xapian_config.out
+
+# memcached
+start_time=$(date +%s)
+
+# load data
+echo "[+] Loading datasets into memcached"
+curl --data "{\"memcached_server\":\"192.168.10.11:31212\"}" --header "Content-Type: application/json" http://192.168.10.10:32003/load
+
+for((i=start; i<=end; i++)); do
+  for ((qps=10000; qps<=100000; qps+=10000)); do
+    ./memcached_runner.sh $i 1 1 $qps $dur baseline
+    ./memcached_runner.sh $i 9 7 $qps $dur harvest
   done 
 done
 

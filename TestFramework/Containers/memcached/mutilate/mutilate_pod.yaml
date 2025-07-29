@@ -24,9 +24,9 @@ spec:
           protocol: TCP
       env:
         - name: MUTILATE_THREADS
-          value: "8"
+          value: "16"
         - name: MUTILATE_CONNS
-          value: "1"
+          value: "256"
         - name: MUTILATE_DURATION
           value: "60"
         - name: MEMCACHED_SERVER

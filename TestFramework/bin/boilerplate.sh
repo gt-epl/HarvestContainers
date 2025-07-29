@@ -1,11 +1,4 @@
 #!/bin/bash
-
-source /project/HarvestContainers/TestFramework/Config/SYSTEM.sh
-
-echo ""
-echo "[!] WORKING_DIR set to ${WORKING_DIR}"
-echo ""
-
 # --- BEGIN BOILERPLATE CODE --- #
 loadModule() {
     TARGET=$1

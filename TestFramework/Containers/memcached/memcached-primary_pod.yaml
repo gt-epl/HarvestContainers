@@ -13,7 +13,6 @@ spec:
         - name: memcached
           containerPort: 11212
           protocol: TCP
-
       env:
         - name: MEMCACHED_THREADS
           value: "16"
