@@ -11,7 +11,7 @@ If ssh aliases are setup, then the below helper script should setup the workload
 
  All primary and secondary workloads have been dockerized and hosted on dockerhub. If you wish to build your own images, Dockerfiles are provided for workloads are present under [../TestFramework/Containers/](../TestFramework/Containers/).
 
-Continue for manual setup or skip to [Running experiments](./setup_runner.md).
+Continue for manual setup or skip to [Running experiments](./04_setup_exp.md) for artifact evaluation.
 
 ## Primaries
 
@@ -123,4 +123,4 @@ kubectl apply cpubully-secondary_svc.yaml
 pip install scipy pandas
 ```
 
-## Next: [Setup Experiments](./setup_runner.md)
+## Next: [Setup Experiments](./04_setup_exp.md)

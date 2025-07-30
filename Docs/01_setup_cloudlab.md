@@ -99,4 +99,4 @@ By default, Docker data directory is located at /var/lib/docker. This location i
 
 > Ensure CPU frequencies are fixed, disks are allocated and Docker has been relocated on all cloudlab nodes before proceeding.
 
-### Next: [Setup Kubernetes](./setup_k8s.md)
+### Next: [Setup Kubernetes](./02_setup_k8s.md)

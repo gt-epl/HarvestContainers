@@ -2,12 +2,14 @@
 
 ## Introduction
 
+The document desribes how to reproduce plots for figures included in the paper. 
+For a description on how the test runners are designed to work, refer to [Setup Runners](./05_setup_runner.md)
+
 There 3 key results from the paper.
 1. Fig 5. that shows HarvestContainers ability to harvest cores from a varied Primary workloads while still meeting SLOs.
 2. Fig 8. that demonstrates its efficacy in shielding a Primary from interrupt interference of a NetworkBully.
 3. Fig 9. that it can work even when multiple primary and secondary containers are involved.
 
-The document desribes how to reproduce plots for figures -
 
 ### Fig 5.
 

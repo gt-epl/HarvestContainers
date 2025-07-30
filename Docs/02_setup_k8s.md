@@ -30,5 +30,5 @@ cd /project/HarvestContainers/TestFramework/K8s
     kubectl get nodes -o wide
     ```
 
-## Next: setup experiment runners
+## Next: [Setup Workload](./03_setup_workload.md)
 
