@@ -7,19 +7,19 @@ dur=60
 #./<workload>_runner.sh <trial_num> <num_secondary_workers> <tic> <qps> <dur> <harvest/baseline>
 
 # xapian: ~76 minutes
-# start_time=$(date +%s)
+start_time=$(date +%s)
 
-# for((i=start; i<=end; i++)); do
-#   for ((qps=500; qps<=4000; qps+=500)); do
-#     ./xapian_runner.sh $i 1 1 $qps $dur baseline
-#     ./xapian_runner.sh $i 9 7 $qps $dur harvest
-#   done 
-# done
+for((i=start; i<=end; i++)); do
+  for ((qps=500; qps<=4000; qps+=500)); do
+    ./xapian_runner.sh $i 1 1 $qps $dur baseline
+    ./xapian_runner.sh $i 9 7 $qps $dur harvest
+  done 
+done
 
-# end_time=$(date +%s)
-# echo "[+] xapian runtime: $((end_time - start_time)) seconds"
+end_time=$(date +%s)
+echo "[+] xapian runtime: $((end_time - start_time)) seconds"
 
-# mv xapian_config.out /mnt/extra/config/xapian_config.out
+mv xapian_config.out /mnt/extra/config/xapian_config.out
 
 # memcached: ~116 minutes
 start_time=$(date +%s)
