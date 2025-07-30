@@ -19,7 +19,8 @@ echo "[+] Benchmarking reads from MySQL"
 
 cd ycsb-0.17.0
 
-exec 2>&1 1>/app/results/${TRIAL}.out
+OUTPUT_FILE="/app/results/${TRIAL}.out"
+exec 2>&1 1>$OUTPUT_FILE
 
 # Run YCSB with raw measurements (env defined apriori: e.g., in Dockerfile or ycsb_pod.yaml)
-sudo taskset -a -c ${YCSB_CORE_RANGE} bin/ycsb run jdbc -P workloads/harvest_read -P db.properties -threads ${YCSB_THREADS} -target ${YCSB_QPS} -p maxexecutiontime=${YCSB_DURATION} -p measurementtype=raw -p measurement.raw.output_file=/project/HarvestContainers/TestFramework/Results/MySQL/${TRIAL}-measurements.raw -s -cp /usr/share/java/mysql-connector-java.jar
+bin/ycsb run jdbc -P workloads/harvest_read -P db.properties -threads ${YCSB_THREADS} -target ${YCSB_QPS} -p maxexecutiontime=${YCSB_DURATION} -p measurementtype=raw -p measurement.raw.output_file=${OUTPUT_FILE} -s -cp /usr/share/java/mysql-connector-java.jar
