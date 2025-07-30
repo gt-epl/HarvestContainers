@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install MySQL connector for Ubuntu 20.04 (focal)
-RUN wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java_8.0.29-1ubuntu20.04_all.deb \
+RUN wget https://cdn.mysql.com/archives/mysql-connector-java-8.0/mysql-connector-java_8.0.29-1ubuntu20.04_all.deb \
     && apt install -y ./mysql-connector-java_8.0.29-1ubuntu20.04_all.deb \
     && ln -sf /usr/share/java/mysql-connector-java-8.0.29.jar /usr/share/java/mysql-connector-java.jar \
     && rm mysql-connector-java_8.0.29-1ubuntu20.04_all.deb

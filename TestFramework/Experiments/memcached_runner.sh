@@ -27,7 +27,6 @@ mkdir -p $LOGDIR
 
 LOGFILE=$(cat /proc/sys/kernel/random/uuid)
 LOGDEST=$LOGDIR/$LOGFILE
-
 CFGFILE="memcached_config.out"
 
 if [ ! -f "$CFGFILE" ]; then

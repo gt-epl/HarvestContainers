@@ -4,7 +4,7 @@
 ssh -o StrictHostKeyChecking=no clabcl1 << EOF
 echo "[+] Connected to clabcl1. Running setup commands..."
 
-pip install scipy
+pip install scipy pandas
 
 echo "[+] Setting up xapian-primary"
 docker pull asarma31/xapian-primary:latest
@@ -35,7 +35,7 @@ EOF
 # SSH into the clabsvr, run a command, and exit (EOF)
 ssh -o StrictHostKeyChecking=no clabsvr << EOF
 echo "[+] Connected to server. Running setup commands..."
-pip install scipy
+pip install scipy pandas
 
 echo "[+] Setting up memcached-primary"
 cd ~/HarvestContainers/TestFramework/Containers/memcached/
