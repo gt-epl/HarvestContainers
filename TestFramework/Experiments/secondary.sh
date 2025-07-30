@@ -1,5 +1,5 @@
 #!/bin/bash
-
+MASTER="clabsvr"
 SECONDARY=cpubully-secondary
 #SECONDARY="x264-secondary"
 #SECONDARY="terasort-secondary"
@@ -22,7 +22,7 @@ secondary() {
   let SECONDARY_DURATION=$1/60
 
 
-  curl --data "{\"duration\":\"${SECONDARY_DURATION}\",\"workers\":\"${SECONDARY_WORKERS}\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://${SECONDARY_IP}:30000
+  curl --data "{\"duration\":\"${SECONDARY_DURATION}\",\"workers\":\"${SECONDARY_WORKERS}\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://${SECONDARY_IP}:30001
 }
 
 get_secondary_progress() {

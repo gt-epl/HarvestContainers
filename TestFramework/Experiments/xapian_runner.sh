@@ -6,7 +6,6 @@ source ../bin/boilerplate.sh
 source ../Config/SYSTEM.sh
 source ./secondary.sh
 
-MASTER="clabsvr" # used by secondary.sh
 XAPIAN_IP="192.168.10.11"
 XAPIAN_PORT="31000"
 XAPIAN_ALIAS="clabcl1"
