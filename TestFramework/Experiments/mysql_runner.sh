@@ -50,11 +50,12 @@ calcUtil() {
 
 calcLats() {
 ssh $YCSB_ALIAS bash <<EOF
+  sudo -s 
   cd $RESDIR
   if [ ! -f "summary" ]; then
-    echo "uuid mean p90 p95 p99 min max" | sudo tee summary
+    echo "uuid mean p90 p95 p99 min max" > summary
   fi
-  echo "${LOGFILE} \$(python ~/HarvestContainers/TestFramework/Containers/MySQL/parsemysql.py ${RESDIR}/$LOGFILE-measurements.raw)" >> summary
+  echo "${LOGFILE} \$(python ~/HarvestContainers/TestFramework/Containers/MySQL/parsemysql.py ${RESDIR}/$LOGFILE.out)" | tee -a summary
 EOF
 }
 

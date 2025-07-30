@@ -346,8 +346,8 @@ int initializeCtrInfo()
     c1->cpuList[5] = 12;
     c1->cpuList[6] = 14;
     c1->cpuList[7] = 16;
-    c1->LOWIDLEFREQ_THRESHOLD = 0.0365;
-    c1->LOW_TIC = 2;
+    c1->LOWIDLEFREQ_THRESHOLD = LOWIDLEFREQ_THRESHOLD;
+    c1->LOW_TIC = LOW_TIC;
     c1->targetIdleCores = 4;
     c1->static_targetIdleCores = 4;
 

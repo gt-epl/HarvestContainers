@@ -28,7 +28,6 @@ ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 # Set YCSB configuration variables  
 ENV YCSB_THREADS=8
 ENV YCSB_CORE_RANGE=1-31
-ENV YCSB_DURATION=60
 
 # Create working directory
 WORKDIR /app
