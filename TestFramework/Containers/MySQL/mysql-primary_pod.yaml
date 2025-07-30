@@ -8,7 +8,7 @@ spec:
   containers:
     - name: mysql-primary
       image: mysql:5.7
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: Never
       env:
         - name: MYSQL_ROOT_PASSWORD
           value: harvest
