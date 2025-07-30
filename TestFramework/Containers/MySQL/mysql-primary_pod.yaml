@@ -35,8 +35,6 @@ spec:
     - name: mysql-initdb
       configMap:
         name: mysql-initdb-config
-  nodeSelector:
-    mysql_pod: primary
 ---
 apiVersion: v1
 kind: ConfigMap
