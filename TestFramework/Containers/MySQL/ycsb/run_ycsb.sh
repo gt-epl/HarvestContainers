@@ -27,4 +27,4 @@ exec 2>&1 1>$RAW_FILE
 bin/ycsb run jdbc -P workloads/harvest_read -P db.properties -threads ${YCSB_THREADS} -target ${YCSB_QPS} -p maxexecutiontime=${YCSB_DURATION} -p measurementtype=raw -p measurement.raw.output_file=${OUTPUT_FILE} -s -cp /usr/share/java/mysql-connector-java.jar
 
 
-tail -n +72 $RAW_FILE > /app/results/${TRIAL}.out
+grep SCAN, $RAW_FILE > /app/results/${TRIAL}.out
