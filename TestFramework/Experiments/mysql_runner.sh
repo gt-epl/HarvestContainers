@@ -133,10 +133,10 @@ harvest() {
   calcLats
   python ../Tools/parse_cpulogger2.py /tmp/cpulogger.log $CPULIST > cpuloggersummary.log 
   calcUtil
-  mv *.log $LOGDEST/
+  sudo mv *.log $LOGDEST/
 
 
-  sleep 5;
+  sleep 2;
   echo "[+] Done."
 }
 

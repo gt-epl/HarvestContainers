@@ -46,7 +46,7 @@ docker pull asarma31/mutilate:latest
 kubectl apply -f mutilate_pod.yaml
 kubectl apply -f mutilate_svc.yaml
 
-# load data
+# [~5 sec] load data
 echo "[+] Load memcached-primary dataset"
 curl --data "{\"memcached_server\":\"192.168.10.11:31212\"}" --header "Content-Type: application/json" http://192.168.10.10:32003/load
 
@@ -60,12 +60,10 @@ docker pull asarma31/ycsb:latest
 kubectl apply -f ycsb_pod.yaml
 kubectl apply -f ycsb_svc.yaml
 
-# load data
+# [~2 min] load data
 # currently ignores mysql_server as it's hardcoded. TODO: change this
 echo "[+] Load mysql-primary dataset"
 curl --data "{\"mysql_server\":\"192.168.10.11:32306\"}" --header "Content-Type: application/json" http://192.168.10.10:32002/load
-
-
 
 
 echo "[+] Setting up xapian-primary"
