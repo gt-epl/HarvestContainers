@@ -17,6 +17,7 @@ TARGET_IDLE_CORES=$3
 QPS=$4
 DURATION=$5
 TYPE="$6"
+
 META="8c,8st,1ct"
 LOGDIR="/mnt/extra/logs/xapian"
 RESDIR="/mnt/extra/results/xapian"
@@ -27,14 +28,15 @@ mkdir -p $RESDIR
 
 LOGFILE=$(cat /proc/sys/kernel/random/uuid)
 LOGDEST=$LOGDIR/$LOGFILE
+CFGFILE="xapian_config.out"
 
-if [ ! -f "xapian_config.out" ]; then
-  echo "uuid type iter sec_workers target_idle qps duration metadata" > config.out
+if [ ! -f "$CFGFILE" ]; then
+  echo "uuid type iter sec_workers target_idle qps duration metadata" > $CFGFILE
   echo "uuid mean p50 p90 p95 p99 min max" > $RESDIR/summary
   echo "uuid event-weighted time-weighted progress" > $LOGDIR/summary
 fi
 
-echo "${LOGFILE} ${TYPE} ${ITER} ${SECONDARY_WORKERS} ${TARGET_IDLE_CORES} ${QPS} ${DURATION} ${META}" >> config.out
+echo "${LOGFILE} ${TYPE} ${ITER} ${SECONDARY_WORKERS} ${TARGET_IDLE_CORES} ${QPS} ${DURATION} ${META}" >> $CFGFILE
 mkdir -p $LOGDEST
 
 
@@ -60,7 +62,7 @@ calcLats() {
 
   cd $XAPIAN_SRC
   cp /dev/shm/results/lats.bin $RESDIR/$LOGFILE.bin
-  echo "${LOGFILE} $(python parselats_old.py $RESDIR/$LOGFILE.bin)" >> $RESDIR/summary
+  echo "${LOGFILE} $(python parselats_old.py $RESDIR/$LOGFILE.bin)" | tee -a $RESDIR/summary
 
   cd $cur
 }

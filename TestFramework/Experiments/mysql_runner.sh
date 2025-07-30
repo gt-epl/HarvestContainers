@@ -31,7 +31,7 @@ if [ ! -f $CFGFILE ]; then
   echo "uuid event-weighted time-weighted progress" > $LOGDIR/summary
 fi
 
-echo "${LOGFILE} ${TYPE} ${ITER} ${SECONDARY_WORKERS} ${TARGET_IDLE_CORES} ${QPS} ${DURATION} ${META}" >> config.out
+echo "${LOGFILE} ${TYPE} ${ITER} ${SECONDARY_WORKERS} ${TARGET_IDLE_CORES} ${QPS} ${DURATION} ${META}" >> $CFGFILE
 mkdir -p $LOGDEST
 
 runMysql() {
