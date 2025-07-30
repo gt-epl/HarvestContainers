@@ -22,7 +22,7 @@ secondary() {
   let SECONDARY_DURATION=$1/60
 
 
-  curl --data "{\"duration\":\"${SECONDARY_DURATION}\",\"workers\":\"${SECONDARY_WORKERS}\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://${SECONDARY_IP}:30001
+  curl --data "{\"duration\":\"${SECONDARY_DURATION}\",\"workers\":\"${SECONDARY_WORKERS}\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://${SECONDARY_IP}:30000
 }
 
 get_secondary_progress() {
