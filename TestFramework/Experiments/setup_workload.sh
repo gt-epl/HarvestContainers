@@ -24,9 +24,6 @@ docker pull asarma31/memcached-primary:latest
 echo "[+] Setting up mysql-primary"
 docker pull mysql:5.7
 
-echo "[+] Setting up experiment config.out directory"
-mkdir -p /mnt/extra/config
-
 echo "[+] clabcl1 setup complete."
 exit
 

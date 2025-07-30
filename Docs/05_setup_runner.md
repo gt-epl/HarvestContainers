@@ -1,7 +1,6 @@
 # Test Runners
 
 ## Introduction
----
 Test runners are currently designed to be executed from the clabcl1 that hosts Primary and Secondary containers. Therefore, this document consists of steps to be executed on this specific node (unless explicitly mentioned otherwise). Most test runners have a similar design and follows the below automated workflow:
 1. Start the Listener, Monitor and Balancer components
 2. Start the Primary workload
@@ -17,14 +16,13 @@ Test runners are currently designed to be executed from the clabcl1 that hosts P
 7. All secondary runners are specified within `secondary.sh`. Default is `CPUBully`
 8. Runner files are within `~/HarvestContainers/TestFramework/Experiment`
 
-## Setup Steps
----
+## Per application Setup Steps
 1. Prepare the HarvestContainers compontents on clabcl1. 
    ```bash
    cd /project/HarvestContainers/TestFramework/Experiment
    ./setup-bins.sh
    ```
-2. Ensure appropriate configs in `~/HarvestContainers/TestFramework/Config/SYSTEM.sh`
+2. Ensure appropriate configs in `~/HarvestContainers/TestFramework/Config/SYSTEM.sh`. The default should work for the provided cloudlab profile.
    1.  Navigate to below snipped in config:
          ```bash
          if [ "${ENV_TYPE}" == "CLOUDLAB" ]
@@ -46,26 +44,20 @@ Test runners are currently designed to be executed from the clabcl1 that hosts P
 3. Create the following directory if not present:
    1. `/mnt/extra/logs`
    2. `/mnt/extra/results`
+   3. `/mnt/extra/config`
 
 4. Inspect `<app>_runner.sh` file and run. 
 
 
 
-## Application specifition steps
----
+## Application specifition info
 
 ### Xapian
 Currently xapian runs in integrated mode i.e. client and server are packaged in the same binary and hence no external client is necessary.
 
-On the target node. Run the following for baseline with id=1, secondary_workers=1 (not relevant for baseline), buffer_cores=1 (also irrelevant for baseline), qps=1000, duration=60(seconds), type=basleine
-
-```bash
-./xapian_runner.sh 1 1 1 1000 60 baseline
-```
-
 ### Memcached
-> :TODO:
+Memcached utilizes mutilate running on clabsvr so that clients do not interfere with the memcached server. Therfore, all latency results are hosted on clabsvr
 
 ### MySQL
-> :TODO:
+Similar to Memcached, MySQL utilizes ycsb that runs on clabsvr and outputs the results on the same.
    

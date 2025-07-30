@@ -12,4 +12,5 @@ sudo mount /dev/sda4 /mnt/extra
 
 # change permissions if necessary
 sudo chmod -R 775 /mnt/extra
-sudo chgrp -R nfslicer-PG0 /mnt/extra
+my_group=$(groups | awk '{ print $1}') # gets the cloudlab group
+sudo chgrp -R $my_group /mnt/extra

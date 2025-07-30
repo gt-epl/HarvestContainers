@@ -1,18 +1,14 @@
 # Cloudlab Setup Notes
 
 ## Introduction
----
 All experiments (functional & performance) were carried out on resources made available by [Cloudlab](https://www.cloudlab.us).
-We primarily make use of 2 resource types. Refer [cloudlab docs](http://docs.cloudlab.us/hardware.html) for more details:
-1. `c6420` - 16 core Xeon Gold (Skylake)
-2. `c220g5` - 20 core Xeon Silvers (Skylake)
+We make use of `c6420` (16 core Xeon Gold (Skylake)) machines. Refer [cloudlab docs](http://docs.cloudlab.us/hardware.html) for more details.
 
-Performance runs were carried out on `c6420` machines. We highly recommend you use the corresponding `c6420` profiles for artifact evaluation. This profile has already been setup with necessary dependencies.
+Performance runs were carried out on `c6420` machines. We highly recommend you use the `c6420` profiles for artifact evaluation. This profile has already been setup with most necessary dependencies.
 
 If you'd like to setup from scratch, refer to `HarvestContainers/TestFramework/Bootstrap/firstboot.sh` for all dependencies.
 
 ## Requesting Resources on Cloudlab
----
 We make use of the following profiles to instantiate resources (aka creating an experiment on cloudlab)
 A **2 node cluster** is sufficient for all experiments. 
 
@@ -20,7 +16,6 @@ A **2 node cluster** is sufficient for all experiments.
 
 Profiles:
 1. For `c6420` - https://www.cloudlab.us/show-profile.php?uuid=70b392b8-0dc8-11ed-aacb-e4434b2381fc
-2. For `c220g5` - https://www.cloudlab.us/show-profile.php?uuid=01f42c4b-c3a1-11ed-b28b-e4434b2381fc
 
 >  **Note:** Cloudlab only allows you to create an experiment for upto 16 hours. You may request a reservation to create an experiment and then extend it for longer.
 
@@ -34,11 +29,12 @@ git clone https://github.com/gt-epl/HarvestContainers.git
 ### Setting up ssh access.
 ---
 - We will rely on ssh keys and aliases to access and manage the physical nodes.
-- In fact, most scripts make use of ssh aliases to address and trigger runs on different machines using the aliases specified in the template config [../TestFramework/Experiments/cloudlab/template.config](../TestFramework/Experiments/cloudlab/template.config)
+- All test scripts make use of ssh aliases to address and trigger runs on different machines using the aliases specified in the template config [../TestFramework/Experiments/cloudlab/template.config](../TestFramework/Experiments/cloudlab/template.config)
 - Create one key-pair (cloudlab_key / cloudlab_key.pub) exclusive for cloudlab management using `ssh-keygen` shared across nodes
 - Servers are assigned ip addresses in the range 192.168.10.0/24. For a 2 node cluser, this is 192.168.10.10 and 192.168.10.11
 - You can resue the provided template ssh config file. Make sure the keys and usernames are updated. oneliner to configure username: `sed "s/USER/$USER/g" template.config > ~/.ssh/config`
-- Ensure both the ssh config and generated public key is available on both clabsvr and clabcl1. The output of the public key can be appendend to `~/.ssh/authorized_keys` file.
+- Ensure both the ssh config and generated public key is available on both clabsvr and clabcl1 in the `~/.ssh/` path. The output of the public key should be appendend to `~/.ssh/authorized_keys` file.
+- verification: `ssh clabsvr` and `ssh clabcl1` should work on both nodes.
 
 template config file:
 ```
@@ -60,14 +56,7 @@ Host cl1
 > Optional: You may create a key-pair for github access as well, since most of the code will need to be pulled from the remote repo.
 
 ### Fix CPU frequencies for reproducible runs on both nodes
-- For c6420 machines:
-  - Run `HarvestContainers/TestFramework/Bootstrap/powerfix.sh`
-- For c220g2:
-  - Turn of smt ([source](https://serverfault.com/questions/235825/))
-  
-    `echo off | sudo tee /sys/devices/system/cpu/smt/control` disable-hyperthreading-from-within-linux-no-access-to-bios)
-  - Review and run `HarvestContainers/TestFramework/Experiment/cloudlab/bootstrap/setcpufreq.sh`
-  - You may need to load acpi-cpufreq kernel module using `sudo modprobe`
+Run `HarvestContainers/TestFramework/Bootstrap/powerfix.sh`
 
 ### Setup Disk
 1. cloudlab nodes have limited disk space. But we can mount more disk space. Do the following for both nodes.
@@ -87,7 +76,8 @@ Host cl1
 
     # change permissions if necessary
     sudo chmod -R 775 /mnt/extra
-    sudo chgrp -R nfslicer-PG0 /mnt/extra
+    my_group=$(groups | awk '{ print $1}') # gets the cloudlab group
+    sudo chgrp -R $my_group /mnt/extra
     ```
 3. helper script for c6420 machines: [../TestFramework/Bootstrap/cloudlab/c6420_disk_setup.sh](../TestFramework/Bootstrap/cloudlab/c6420_disk_setup.sh)
 

@@ -6,6 +6,15 @@ dur=60
 
 #./<workload>_runner.sh <trial_num> <num_secondary_workers> <tic> <qps> <dur> <harvest/baseline>
 
+mkdir -p /mnt/extra/config
+mkdir -p /mnt/extra/results
+mkdir -p /mnt/extra/logs
+
+ssh clabsvr bash << EOF
+mkdir -p /mnt/extra/config
+mkdir -p /mnt/extra/results
+mkdir -p /mnt/extra/logs
+EOF
 
 # memcached: ~116 minutes
 start_time=$(date +%s)
