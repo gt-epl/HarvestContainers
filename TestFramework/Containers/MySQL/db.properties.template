@@ -1,4 +1,0 @@
-db.driver=com.mysql.jdbc.Driver
-db.url=jdbc:mysql://MYSQL_SVC:3306/ycsb?useSSL=false&rewriteBatchedStatements=true
-db.user=root
-db.passwd=harvest

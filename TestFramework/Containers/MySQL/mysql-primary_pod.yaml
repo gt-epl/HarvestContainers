@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: mysql
+  name: mysql-primary
   labels:
-    name: mysql-hc-server
+    name: mysql-server
 spec:
   containers:
-    - name: mysql
+    - name: mysql-primary
       image: mysql:5.7
       imagePullPolicy: IfNotPresent
       env:
@@ -29,8 +29,9 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
   volumes:
     - name: mysql-persistent-storage
-      persistentVolumeClaim:
-        claimName: mysql-pv-claim
+      hostPath:
+        path: /dev/shm/mysql
+        type: DirectoryOrCreate
     - name: mysql-initdb
       configMap:
         name: mysql-initdb-config
