@@ -21,6 +21,9 @@ docker pull asarma31/cpubully:latest
 echo "[+] Setting up memcached-primary"
 docker pull asarma31/memcached-primary:latest
 
+echo "[+] Setting up experiment config.out directory"
+mkdir -p /mnt/extra/config
+
 echo "[+] clabcl1 setup complete."
 exit
 
