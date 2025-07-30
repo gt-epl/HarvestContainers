@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#define MAX_EVENTS 1000 * 1000 * 100
+#define MAX_EVENTS 1000*1000*100
 
 int loggingEnabled;
 unsigned int eventCount;
@@ -68,6 +68,8 @@ struct dynamic_logentry {
     float surplus_weight;
     float deficit_weight;
     int num_samples_taken;
+    float aggIdleCoresCount;
+    float lowIdleFreq;
 };
 
 void logDynamicEvent(struct timespec *eventTime, 
@@ -75,7 +77,7 @@ void logDynamicEvent(struct timespec *eventTime,
         int idleCoresCount, int prev_targetIdleCores,
         int targetIdleCores, unsigned long long time_spent_surplus,
         unsigned long long time_spent_deficit, float surplus_weight,
-        float deficit_weight, int num_samples_taken);
+        float deficit_weight, int num_samples_taken, float aggIdleCoresCount, float lowIdleFreq);
 
 struct dynamic_logentry *dynamicEvents;
 unsigned int dynamicEventCount;

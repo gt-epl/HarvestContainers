@@ -1,8 +1,10 @@
 #ifndef INTERRUPTS_H
 #define INTERRUPTS_H
 
-// Sample interval, in nanoseconds
-static unsigned long long IRQ_SAMPLE_RATE = 1 * 1000 * 1000 * 1000ULL;
+//Sample interval, in nanoseconds
+//#define IRQ_SAMPLE_RATE 1*1000*1000*1000
+//#define IRQ_SAMPLE_RATE 1*1000*1000
+static unsigned long long IRQ_SAMPLE_RATE = 1*1000*1000*1000ULL;
 
 int interruptSampleCount, interruptRebalanceCount;
 
@@ -14,6 +16,7 @@ struct harvest_core {
 };
 
 unsigned long long harvest_core_weights[64];
+//unsigned long long curr_irq_times[64];
 unsigned long long prev_irq_times[64];
 
 int fd_qidlecpu;

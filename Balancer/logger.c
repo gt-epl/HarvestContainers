@@ -17,10 +17,11 @@ void getHumanIdleMask(unsigned long long mask, char *human_readable_mask)
      * so that output is easier to read
      */
         int i;
-        for (i = 0; i <= cpuList[NUMCPUS-1]; i++) {
-            if ((mask & (1ULL << (i)))) {
-                human_readable_mask[i] = 1 + '0';
-            } else human_readable_mask[i] = 0 + '0';
+        for(i = 0; i <= cpuList[NUMCPUS-1]; i++) {
+            if( (mask & (1ULL << (i))) ) {
+                human_readable_mask[i] = 1+'0';
+            }
+            else human_readable_mask[i] = 0+'0';
         }
         human_readable_mask[i] = '\0';
 }
@@ -30,7 +31,7 @@ void addLogEvent(struct timespec *eventStart, struct timespec *eventEnd,
         int idleCoresCount, unsigned long long setAffinityMask,
         int CoresAllocatedToSecondary)
 {
-    if (!loggingEnabled || eventCount > MAX_EVENTS) return;
+    if(!loggingEnabled || eventCount > MAX_EVENTS) return;
 
     events[eventCount].startSec = eventStart->tv_sec;
     events[eventCount].startNSec = eventStart->tv_nsec;
@@ -51,9 +52,9 @@ void logDynamicEvent(struct timespec *eventTime,
         int idleCoresCount, int prev_targetIdleCores,
         int targetIdleCores, unsigned long long time_spent_surplus,
         unsigned long long time_spent_deficit, float surplus_weight,
-        float deficit_weight, int num_samples_taken)
+        float deficit_weight, int num_samples_taken, float aggIdleCoresCount, float lowIdleFreq)
 {
-    if (!loggingEnabled || dynamicEventCount > MAX_EVENTS) return;
+    if(!loggingEnabled || dynamicEventCount > MAX_EVENTS) return;
 
     dynamicEvents[dynamicEventCount].startSec = eventTime->tv_sec;
     dynamicEvents[dynamicEventCount].startNSec = eventTime->tv_nsec;
@@ -66,6 +67,8 @@ void logDynamicEvent(struct timespec *eventTime,
     dynamicEvents[dynamicEventCount].surplus_weight = surplus_weight;
     dynamicEvents[dynamicEventCount].deficit_weight = deficit_weight;
     dynamicEvents[dynamicEventCount].num_samples_taken = num_samples_taken;
+    dynamicEvents[dynamicEventCount].aggIdleCoresCount = aggIdleCoresCount;
+    dynamicEvents[dynamicEventCount].lowIdleFreq = lowIdleFreq;
 
     dynamicEventCount++;
 }
@@ -87,24 +90,25 @@ void calculateExecTime()
     /* String goes from 0 to the largest CPU in the list,
      * so allocate 1 (for zero) + largestCPU (for all the bits
      * we care about seeing) + 1 (for terminating the string) */
-    char humanOldMask[1 + cpuList[NUMCPUS - 1] + 1];
-    char humanNewMask[1 + cpuList[NUMCPUS - 1] + 1];
+    char humanOldMask[1+cpuList[NUMCPUS-1]+1];
+    char humanNewMask[1+cpuList[NUMCPUS-1]+1];
 
     FILE *idleMaskEvents = fopen("idleMaskChanges.log", "w");
     
-    for (e = 0; e < idleMaskChangeCount-1; e++) {
+    for(e = 0; e < idleMaskChangeCount-1; e++) {
         getHumanIdleMask(idleMaskChanges[e].oldMask, humanOldMask);
         getHumanIdleMask(idleMaskChanges[e].newMask, humanNewMask);
         fprintf(idleMaskEvents, "%lu,%lu,%s,%#llx,%s,%#llx\n", idleMaskChanges[e].ts_sec, idleMaskChanges[e].ts_nsec,
             humanOldMask, idleMaskChanges[e].oldMask, humanNewMask, idleMaskChanges[e].newMask);
-        elapsed = (1000 * 1000 * 1000) * 
+        elapsed = (1000*1000*1000) * 
             (idleMaskChanges[e+1].ts_sec - idleMaskChanges[e].ts_sec) + 
             (idleMaskChanges[e+1].ts_nsec - idleMaskChanges[e].ts_nsec);
         totalExecTime += elapsed;
-        for (c = 0; c < NUMCPUS; c++) {
-            if ((idleMaskChanges[e+1].oldMask & (1ULL << (cpuList[c])))) {
+        for(c = 0; c < NUMCPUS; c++) {
+            if( (idleMaskChanges[e+1].oldMask & (1ULL << (cpuList[c]))) ) {
                 utilization[cpuList[c]].active += elapsed; 
-            } else {
+            }
+            else {
                 utilization[cpuList[c]].idle += elapsed;
             }
         }
@@ -117,10 +121,10 @@ void calculateExecTime()
     printf(" ----------------------------------    \n");
     for(c = 0; c < NUMCPUS; c++) {
         printf(" cpu%d, %.2f%%, %.2f%%\n", cpuList[c], 
-            (((utilization[cpuList[c]].idle) / (totalExecTime * 1.0)) * 100.0),
-            (((utilization[cpuList[c]].active) / (totalExecTime * 1.0)) * 100.0));
+            ( ((utilization[cpuList[c]].idle) / (totalExecTime*1.0)) * 100.0 ),
+            ( ((utilization[cpuList[c]].active) / (totalExecTime*1.0)) * 100.0));
 
-        fprintf(idleMaskChangeTimes, "cpu%d, %lu, %lu\n", cpuList[c],
+        fprintf(idleMaskChangeTimes, "cpu%d, %lu, %lu\n", cpuList[c], 
             utilization[cpuList[c]].idle, utilization[cpuList[c]].active);
     }
     printf(" Total Exec Time: %'lu\n", totalExecTime);
@@ -129,8 +133,8 @@ void calculateExecTime()
 
 void writeLog(void)
 {
-    char humanIdleMask[1 + cpuList[NUMCPUS - 1] + 1];
-    char humanAffinityMask[1 + cpuList[NUMCPUS - 1] + 1];
+    char humanIdleMask[1+cpuList[NUMCPUS-1]+1];
+    char humanAffinityMask[1+cpuList[NUMCPUS-1]+1];
     int e;
     unsigned int tooManyIdleCount;
     unsigned int tooFewIdleCount;
@@ -160,8 +164,10 @@ void writeLog(void)
     char currTime[100];
     strftime(currTime, sizeof(currTime), "%Y-%m-%d-%H.%M", &tm_now);
     char logFilename[100];
+    // sprintf(logFilename, "balancer_%s.log", currTime);
+    // FILE *logfile = fopen(logFilename, "w");
     FILE *logfile = fopen("balancer.log", "w");
-    if (logfile == NULL) {
+    if(logfile == NULL) {
         printf("[!] Unable to open balancer.log file for writing: %s\n", strerror(errno));
         return;
     } 
@@ -173,22 +179,23 @@ void writeLog(void)
         "CoresAllocatedToSecondary\n");
 
     /* Write events to log file */
-    for (e = 0; e < eventCount; e++) {
-        elapsed = (1000 * 1000 * 1000) * 
+    for(e = 0; e < eventCount; e++) {
+        elapsed = (1000*1000*1000) * 
             (events[e].endSec - events[e].startSec) + 
             (events[e].endNSec - events[e].startNSec); 
         totalProcessingTime += elapsed;
-        if (elapsed > maxServiceTime) maxServiceTime = elapsed;
-        if (elapsed < minServiceTime) minServiceTime = elapsed;
+        if(elapsed > maxServiceTime) maxServiceTime = elapsed;
+        if(elapsed < minServiceTime) minServiceTime = elapsed;
 
-        if (events[e].coreDifference < 0) {
+        if(events[e].coreDifference < 0) {
             tooFewIdleTime += elapsed;
             tooFewIdleCount++;
-        } else if (events[e].coreDifference > 0) {
+        }
+        else if(events[e].coreDifference > 0) {
             tooManyIdleTime += elapsed;
             tooManyIdleCount++;
         }
-        if (events[e].setAffinity) setAffinityCount++;
+        if(events[e].setAffinity) setAffinityCount++;
         /* Convert to human-readable mask format for the log */
         getHumanIdleMask(events[e].currIdleMask, humanIdleMask);
         getHumanIdleMask(events[e].setAffinityMask, humanAffinityMask);
@@ -244,21 +251,21 @@ void writeLog(void)
     fclose(statsfile);
 
     FILE *dyn_logfile = fopen("dynamic.log", "w");
-    if (dyn_logfile == NULL) {
+    if(dyn_logfile == NULL) {
         printf("[!] Unable to open dynamic.log file for writing: %s\n", strerror(errno));
         return;
     }
 
    /* Write log file header */
-    fprintf(dyn_logfile, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+    fprintf(dyn_logfile, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
         "startSec","startNSec","sample_time_elapsed","idleCoresCount",
         "prev_targetIdleCores","targetIdleCores","time_spent_surplus",
         "time_spent_deficit", "surplus_weight", "deficit_weight",
-        "num_samples_taken\n");
+        "num_samples_taken","aggIdle", "lowIdleFreq");
 
     /* Write events to log file */
-    for (e = 0; e < dynamicEventCount; e++) {
-        fprintf(dyn_logfile, "%lu,%lu,%llu,%d,%d,%d,%llu,%llu,%.2f,%.2f,%d\n", 
+    for(e = 0; e < dynamicEventCount; e++) {
+        fprintf(dyn_logfile, "%lu,%lu,%llu,%d,%d,%d,%llu,%llu,%.2f,%.2f,%d,%.4f,%.1f\n", 
             dynamicEvents[e].startSec,
             dynamicEvents[e].startNSec,
             dynamicEvents[e].sample_time_elapsed,
@@ -269,7 +276,9 @@ void writeLog(void)
             dynamicEvents[e].time_spent_deficit,
             dynamicEvents[e].surplus_weight,
             dynamicEvents[e].deficit_weight,
-            dynamicEvents[e].num_samples_taken);
+            dynamicEvents[e].num_samples_taken,
+            dynamicEvents[e].aggIdleCoresCount,
+            dynamicEvents[e].lowIdleFreq);
     }
     printf("\n[+] Wrote dynamic log to %s\n", "dynamic.log");
     fclose(dyn_logfile);

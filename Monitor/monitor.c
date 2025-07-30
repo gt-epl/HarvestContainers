@@ -9,54 +9,10 @@
 #include <linux/cpuset.h>
 #include <linux/string.h>
 #include <linux/device.h>
-#include <linux/interrupt.h>
 
 #include "monitor.h"
 #include "shmem.h"
 #include "procfs.h"
-
-
-int set_irq_affinity(int num_cpus)
-{
-  int i;
-  struct cpumask *new_affinity_mask;
-  struct timespec64 start;
-  struct timespec64 end;
-  unsigned long long elapsed;
-  ktime_get_raw_ts64(&start);
-  //u64 start;
-  //u64 end;
-
-  //start = ktime_get_raw_ns();
-  //printk(KERN_EMERG "[SET_IRQ_AFFINITY] Start: %llu\n", (unsigned long long)start);
-
-  new_affinity_mask = kmalloc(sizeof(struct cpumask), GFP_USER);
-  cpumask_clear(new_affinity_mask);
-  /* Always add the dedicated set of IRQ handling cores */
-  for (i = 0; i < num_cpus; i++) {
-    cpumask_set_cpu(irqAffinity[i], new_affinity_mask);
-  }
-  /* Now assign spare Harvest cores */
-  for (i = 0; i < idleCpuStats->num_affinity; i++) {
-    cpumask_set_cpu(idleCpuStats->affinity_list[i], new_affinity_mask);
-  }
-  /* Affinitize all the IRQs that we're managing */
-  for (i = 0; i < NUM_INTERRUPTS; i++) {
-    int curr_interrupt = irqList[i];
-    irq_set_affinity(curr_interrupt, new_affinity_mask);
-  }
-
-  ktime_get_raw_ts64(&end);
-  
-  elapsed = (1000*1000*1000) *
-    (end.tv_sec - start.tv_sec) +
-    (end.tv_nsec - start.tv_nsec);
- 
-  printk(KERN_INFO "[SET_IRQ_AFFINITY] %llu\n", (unsigned long long)elapsed);
-  //end = ktime_get_raw_ns();
-  //printk(KERN_EMERG "[SET_IRQ_AFFINITY] End: %llu\n", (unsigned long long)end);
-  return 0;
-}
 
 int get_irq_times(void)
 {
@@ -66,7 +22,7 @@ int get_irq_times(void)
     int pos;
     //u64 siq;
 
-    for (pos = 0; pos < NUMCPUS; pos++) {
+    for(pos = 0; pos < NUMCPUS; pos++) {
         kcpustat_cpu_fetch(&kcpustat, cpuList[pos]);
         hiq = div_u64(cpustat[CPUTIME_IRQ] * 9, (9ull * NSEC_PER_SEC + (USER_HZ / 2)) / USER_HZ);
         //siq = div_u64(cpustat[CPUTIME_SOFTIRQ] * 9, (9ull * NSEC_PER_SEC + (USER_HZ / 2)) / USER_HZ);      
@@ -89,7 +45,7 @@ int update_pid_cache(struct task_struct *secondary_init_task, struct ctr_info *s
   list_for_each_safe(lh, lh_tmp, &secondary_init_task->cgroups->tasks) {
     rcu_read_lock();
     ts = list_entry(lh, struct task_struct, cg_list);
-    if (unlikely(!ts)) {
+    if(unlikely(!ts)) {
       rcu_read_unlock();
       continue;
     }
@@ -99,7 +55,7 @@ int update_pid_cache(struct task_struct *secondary_init_task, struct ctr_info *s
     put_task_struct(ts);
     curr_pid++;
     secondary_ctr_info->nr_pids = curr_pid;
-    if (curr_pid > 127) return -1;
+    if(curr_pid > 127) return -1;
   }
   return 0;
 }
@@ -121,7 +77,7 @@ void twopa(void) {
 
   new_affinity_mask = kmalloc(sizeof(struct cpumask), GFP_USER);
 
-  for (curr_secondary_ctr = 0; 
+  for(curr_secondary_ctr = 0; 
       curr_secondary_ctr < idleCpuStats->nr_secondary_ctrs;
       curr_secondary_ctr++) {
     curr_secondary_ctr_info = &idleCpuStats->secondary_ctrs[curr_secondary_ctr];
@@ -134,7 +90,7 @@ void twopa(void) {
       continue;
     }
     secondary_init_task = pid_task(secondary_init_pid, PIDTYPE_PID);
-    if (unlikely(!secondary_init_task)) {
+    if(unlikely(!secondary_init_task)) {
         rcu_read_unlock();
         curr_secondary_ctr++;
         continue;
@@ -143,44 +99,44 @@ void twopa(void) {
     /* Get css_set for Secondary Container */
     ctr_css_set = secondary_init_task->cgroups;
     /* Get number of Secondary PIDs in the container */
-    if (curr_secondary_ctr_info->nr_pids != ctr_css_set->nr_tasks) {
+    if(curr_secondary_ctr_info->nr_pids != ctr_css_set->nr_tasks) {
       update_pid_cache(secondary_init_task, curr_secondary_ctr_info);
     }
     put_task_struct(secondary_init_task);
     rcu_read_unlock();
   }
 
-  for (curr_secondary_ctr = 0;
+  for(curr_secondary_ctr = 0;
       curr_secondary_ctr < idleCpuStats->nr_secondary_ctrs;
       curr_secondary_ctr++) {
 
     curr_secondary_ctr_info = &idleCpuStats->secondary_ctrs[curr_secondary_ctr];
 
     /* --------- Phase 1 --------- */
-    if (idleCpuStats->needs_rebalance == 1) {
-      for (curr_ctr_pid = 0; curr_ctr_pid < curr_secondary_ctr_info->nr_pids; curr_ctr_pid++) {
+    if(idleCpuStats->needs_rebalance == 1) {
+      for(curr_ctr_pid = 0; curr_ctr_pid < curr_secondary_ctr_info->nr_pids; curr_ctr_pid++) {
         rcu_read_lock();
         this_pid = find_vpid(curr_secondary_ctr_info->pidList[curr_ctr_pid]);
-        if (unlikely(!this_pid)) {
+        if(unlikely(!this_pid)) {
           rcu_read_unlock();
           continue;
         }
         this_task = pid_task(this_pid, PIDTYPE_PID);
-        if (unlikely(!this_task)) {
+        if(unlikely(!this_task)) {
           rcu_read_unlock();
           continue;
         }
         /* We only care about migrating running tasks, so if this_task is not
          * in a runnable state, skip it */
         get_task_struct(this_task);
-        if (this_task->state != TASK_RUNNING) {
+        if(this_task->state != TASK_RUNNING) {
           put_task_struct(this_task);
           rcu_read_unlock();
           continue;
         }
         /* If this_task's current CPU is NOT marked as having at least 1 active
          * task, leave this_task in place and mark that CPU has having a task. */
-        if (!has_task[this_task->cpu]) {
+        if(!has_task[this_task->cpu]) {
             has_task[this_task->cpu] = 1;
             num_placements++;
             put_task_struct(this_task);
@@ -189,14 +145,14 @@ void twopa(void) {
         }
         /* Make sure we don't try and put this_task on its current CPU if it
          * needs migration */
-        if (idleCpuStats->affinity_list[curr_cpu] == this_task->cpu) curr_cpu++;
+        if(idleCpuStats->affinity_list[curr_cpu] == this_task->cpu) curr_cpu++;
         /* Loop around if we have exceeded number of affinity CPUs */
-        if (curr_cpu == idleCpuStats->num_affinity) curr_cpu = 0;
+        if(curr_cpu == idleCpuStats->num_affinity) curr_cpu = 0;
 
         /* We need to migrate this_task, so create a single-cpu affinity mask */
         cpumask_clear(new_affinity_mask);
         cpumask_set_cpu(idleCpuStats->affinity_list[curr_cpu], new_affinity_mask);
-        if (unlikely(!this_task)) {
+        if(unlikely(!this_task)) {
             put_task_struct(this_task);
             rcu_read_unlock();
             continue;
@@ -211,7 +167,7 @@ void twopa(void) {
 
         /* If each core in the new affinity mask has a task
         * then we can stop doing single placements */
-        if (num_placements == idleCpuStats->num_affinity) break;
+        if(num_placements == idleCpuStats->num_affinity) break;
         curr_cpu++;
       } // End looping thru container PIDs for Phase 1
     }
@@ -220,25 +176,25 @@ void twopa(void) {
     /* Go back and set the full affinity mask on all Secondary PIDs */
     /* Always assign dedicated Secondary cores */
     cpumask_clear(new_affinity_mask);
-    for (curr_cpu = 0; curr_cpu < idleCpuStats->num_secondary_cores; curr_cpu++) {
+    for(curr_cpu = 0; curr_cpu < idleCpuStats->num_secondary_cores; curr_cpu++) {
       cpumask_set_cpu(idleCpuStats->secondary_cores_list[curr_cpu], new_affinity_mask);
     }
 
     /* Now assign spare Harvest cores */
-    for (curr_cpu = 0; curr_cpu < idleCpuStats->num_affinity; curr_cpu++) {
+    for(curr_cpu = 0; curr_cpu < idleCpuStats->num_affinity; curr_cpu++) {
       cpumask_set_cpu(idleCpuStats->affinity_list[curr_cpu], new_affinity_mask);
     }
 
     /* Set full affinity mask on all Secondary PIDs */
-    for (curr_ctr_pid = 0; curr_ctr_pid < curr_secondary_ctr_info->nr_pids; curr_ctr_pid++) {
+    for(curr_ctr_pid = 0; curr_ctr_pid < curr_secondary_ctr_info->nr_pids; curr_ctr_pid++) {
       rcu_read_lock();
       this_pid = find_vpid(curr_secondary_ctr_info->pidList[curr_ctr_pid]);
-      if (unlikely(!this_pid)) {
+      if(unlikely(!this_pid)) {
         rcu_read_unlock();
         continue;
       }
       this_task = pid_task(this_pid, PIDTYPE_PID);
-      if (unlikely(!this_task)) {
+      if(unlikely(!this_task)) {
         rcu_read_unlock();
         continue;
       }
@@ -283,11 +239,11 @@ void two_phase_affinity(void)
   new_affinity_mask = kmalloc(sizeof(struct cpumask), GFP_USER);
 
   /* No need for Phase 1 if this is a SHRINK, so skip ahead */
-  if (idleCpuStats->needs_rebalance >= 2) goto phase_two;
+  if(idleCpuStats->needs_rebalance >= 2) goto phase_two;
 
 /* --------- Phase 1 --------- */
-  while (curr_secondary_ctr < idleCpuStats->nr_secondary_ctrs) {
-    if (kthread_should_stop()) {
+  while(curr_secondary_ctr < idleCpuStats->nr_secondary_ctrs) {
+    if(kthread_should_stop()) {
         return;
     }
     /* Get task_struct for Secondary Container Init PID */
@@ -302,7 +258,7 @@ void two_phase_affinity(void)
       continue;
     }
     secondary_init_task = pid_task(secondary_init_pid, PIDTYPE_PID);
-    if (unlikely(!secondary_init_task)) {
+    if(unlikely(!secondary_init_task)) {
         rcu_read_unlock();
         curr_secondary_ctr++;
         continue;
@@ -317,14 +273,14 @@ void two_phase_affinity(void)
     /* Step through each PID in the container */
     // list_for_each(lh, &ctr_css_set->tasks) {
     list_for_each_safe(lh, lh_tmp, &ctr_css_set->tasks) {
-      if (kthread_should_stop()) {
+      if(kthread_should_stop()) {
         put_task_struct(secondary_init_task);
         rcu_read_unlock(); //release lock for Secondary Init PID
         return;
       }
       rcu_read_lock();
       ts = list_entry(lh, struct task_struct, cg_list);
-      if (unlikely(!ts)) {
+      if(unlikely(!ts)) {
         rcu_read_unlock();
         continue;
       }
@@ -342,7 +298,7 @@ void two_phase_affinity(void)
       task_cpu = ts->cpu;
       /* If ts's current CPU is NOT marked as having at least 1 active
         * task, leave ts in place and mark that CPU has having a task. */
-      if (!has_task[task_cpu]) {
+      if(!has_task[task_cpu]) {
           has_task[task_cpu] = 1;
           num_placements++;
           put_task_struct(ts);
@@ -351,9 +307,9 @@ void two_phase_affinity(void)
           continue;
       }
       /* Make sure we don't try and put ts on its current CPU if it needs migration */
-      if (idleCpuStats->affinity_list[curr_cpu] == task_cpu) curr_cpu++;
+      if(idleCpuStats->affinity_list[curr_cpu] == task_cpu) curr_cpu++;
       /* Loop around if we have exceeded number of affinity CPUs */
-      if (curr_cpu == idleCpuStats->num_affinity) curr_cpu = 0;
+      if(curr_cpu == idleCpuStats->num_affinity) curr_cpu = 0;
       /* We need to migrate ts, so create a single-cpu affinity mask */
       cpumask_clear(new_affinity_mask);
       cpumask_set_cpu(idleCpuStats->affinity_list[curr_cpu], new_affinity_mask);
@@ -366,7 +322,7 @@ void two_phase_affinity(void)
       num_placements++;
       /* If each core in the new affinity mask has a task
        * then we can stop doing single placements */
-      if (num_placements == idleCpuStats->num_affinity) break;
+      if(num_placements == idleCpuStats->num_affinity) break;
       curr_cpu++;
     } // End Container Child PIDs Loop
     put_task_struct(secondary_init_task);
@@ -382,19 +338,19 @@ phase_two:
   cpumask_clear(new_affinity_mask);
 
   /* Always assign dedicated Secondary cores */
-  for (c = 0; c < idleCpuStats->num_secondary_cores; c++) {
+  for(c = 0; c < idleCpuStats->num_secondary_cores; c++) {
       cpumask_set_cpu(idleCpuStats->secondary_cores_list[c], new_affinity_mask);
   }
   
   /* Assign spare Harvest cores */
-  for (c = 0; c < idleCpuStats->num_affinity; c++) {
+  for(c = 0; c < idleCpuStats->num_affinity; c++) {
       cpumask_set_cpu(idleCpuStats->affinity_list[c], new_affinity_mask);
   }
 
   /* Loop through Secondary Init PIDs */
   curr_secondary_ctr = 0;
-  while (curr_secondary_ctr < idleCpuStats->nr_secondary_ctrs) {
-    if (kthread_should_stop()) {
+  while(curr_secondary_ctr < idleCpuStats->nr_secondary_ctrs) {
+    if(kthread_should_stop()) {
         return;
     }
     /* Get task_struct for Secondary Container Init PID */
@@ -410,7 +366,7 @@ phase_two:
       continue;
     }
     secondary_init_task = pid_task(secondary_init_pid, PIDTYPE_PID);
-    if (unlikely(!secondary_init_task)) {
+    if(unlikely(!secondary_init_task)) {
         rcu_read_unlock();
         curr_secondary_ctr++;
         continue;
@@ -426,14 +382,14 @@ phase_two:
     //rcu_read_lock(); // Begin protect list_for_each()
     //list_for_each(lh, &ctr_css_set->tasks) {
     list_for_each_safe(lh, lh_tmp, &ctr_css_set->tasks) {
-      if (kthread_should_stop()) {
+      if(kthread_should_stop()) {
         put_task_struct(secondary_init_task);
         rcu_read_unlock();
         return;
       }
       rcu_read_lock();
       ts = list_entry(lh, struct task_struct, cg_list);
-      if (unlikely(!ts)) {
+      if(unlikely(!ts)) {
         rcu_read_unlock();
         continue;
       }
@@ -471,7 +427,6 @@ int check_idle_cpus(void *data)
     LOG_LEVEL = 0;
     /* End Logger vars */
 
-    handle_irq = 0;
     runnable = 0;
     samples = 0;
     currMask = 0;
@@ -480,7 +435,6 @@ int check_idle_cpus(void *data)
     idleCpuStats = &sh_mem[0];
 
     idleCpuStats->numIdle = 0;
-    idleCpuStats->num_affinity = 0;
     idleCpuStats->mask = 0;
     idleCpuStats->samples = 0;
     idleCpuStats->irq_samples = 0;
@@ -488,12 +442,12 @@ int check_idle_cpus(void *data)
     idleCpuStats->nr_secondary_ctrs = 0;
 
     /* Initialize IRQ data */
-    for (pos = 0; pos < NUMCPUS; pos++) {
+    for(pos = 0; pos < NUMCPUS; pos++) {
         idleCpuStats->curr_irq_times[cpuList[pos]] = 0;
     }
 
-    while (1) {
-        if (kthread_should_stop()) {
+    while(1) {
+        if(kthread_should_stop()) {
             return 0;
         }
         if (!runnable) {
@@ -501,13 +455,14 @@ int check_idle_cpus(void *data)
             schedule();
         }
         idleCount = 0;
-        for (curr_cpu = 0; curr_cpu < NUMCPUS; curr_cpu++) {
+        for(curr_cpu = 0; curr_cpu < NUMCPUS; curr_cpu++) {
             is_idle = idle_cpu(cpuList[curr_cpu]);
-            if (is_idle) {
+            if(is_idle) {
                 /* bit is 0 for idle */
                 currMask &= ~(1ULL << (cpuList[curr_cpu]));
                 idleCount++;
-            } else {
+            }
+            else {
                 /* bit is 1 for active */
                 currMask |= 1ULL << (cpuList[curr_cpu]);
             }
@@ -515,38 +470,33 @@ int check_idle_cpus(void *data)
         idleCpuStats->numIdle = idleCount;
         idleCpuStats->mask = currMask;
  
-        if ( idleCpuStats->update_irq > 0 ) {
+        if( idleCpuStats->update_irq > 0 ) {
             get_irq_times();
             idleCpuStats->update_irq = 0;
         }
-        if ((idleCpuStats->needs_rebalance > 0) && !(rebalancing)) {
+        if( (idleCpuStats->needs_rebalance > 0) && !(rebalancing)) {
             rebalancing = 1;
             //rebalance_secondary();
             //two_phase_affinity();
             twopa();
-            /*
-            if (handle_irq) {
-              set_irq_affinity(NUM_INTERRUPT_CPUS);
-            }
-            */
             rebalancing = 0;
             idleCpuStats->needs_rebalance = 0;
             schedule();
         }
 
-        if (samples > 100000) {
+        if(samples > 100000) {
             get_irq_times();
             idleCpuStats->irq_samples += 1;
             schedule();
-        } else samples++;
-
+        }
+        else samples++;
         /* Begin Logger Code */
-        if (LOG_LEVEL > 0) {
+        if(LOG_LEVEL > 0) {
             if (numentries > LOGSIZE-1) continue;
             ktime_get_raw_ts64(&now);
-            if (LOG_LEVEL == 1) {
+            if(LOG_LEVEL == 1) {
                 /* Avoid writing redundant log entry if no mask change */
-                if (currMask == lastMask) continue;
+                if(currMask == lastMask) continue;
             }
             /* Otherwise write entry to log and update lastMask */
             events[numentries].sec = now.tv_sec;
@@ -566,43 +516,31 @@ int __init logger_proc_init(void)
 {
     parent = proc_mkdir(PROCFS_NAME,NULL);
     maskent = proc_create("mask",0777,parent,&proc_mask_fops);
-    if (!maskent)
+    if(!maskent)
         return -1;
 
     controlent = proc_create("control",0777,parent,&proc_control_fops);
-    if (!controlent)
+    if(!controlent)
         return -1;
 
     cpulistent = proc_create("cpulist",0777,parent,&proc_cpulist_fops);
-    if (!cpulistent)
+    if(!cpulistent)
         return -1;
 
     bindcpuent = proc_create("bindcpu",0777,parent,&proc_bindcpu_fops);
-    if (!bindcpuent)
+    if(!bindcpuent)
         return -1;
 
     irqtime = proc_create("irqtime",0777,parent,&proc_irqtime_fops);
-    if (!irqtime)
+    if(!irqtime)
         return -1;
 
     logent = proc_create("log",0777,parent,&proc_log_fops);
-    if (!logent)
+    if(!logent)
         return -1;
 
     logcontrolent = proc_create("logcontrol",0777,parent,&proc_logcontrol_fops);
-    if (!logcontrolent)
-        return -1;
-
-    irqlist = proc_create("irqlist",0777,parent,&proc_irqlist_fops);
-    if (!irqlist)
-        return -1;
-
-    irqaffinity = proc_create("irqaffinity",0777,parent,&proc_irqaffinity_fops);
-    if (!irqaffinity)
-        return -1;
-
-    irqcontrol = proc_create("irqcontrol",0777,parent,&proc_irqcontrol_fops);
-    if (!irqcontrol)
+    if(!logcontrolent)
         return -1;
 
     return 0;
@@ -617,9 +555,6 @@ void __exit logger_proc_cleanup(void)
     remove_proc_entry("irqtime", parent);
     remove_proc_entry("log", parent);
     remove_proc_entry("logcontrol", parent);
-    remove_proc_entry("irqlist", parent);
-    remove_proc_entry("irqaffinity", parent);
-    remove_proc_entry("irqcontrol", parent);
     remove_proc_entry(PROCFS_NAME, NULL);
 }
 
@@ -696,6 +631,7 @@ static void __exit idlecpu_exit(void)
     logger_proc_cleanup();
     mutex_destroy(&qidlecpu_mutex);
     device_destroy(class, MKDEV(major, 0));
+    class_unregister(class);
     class_destroy(class);
     unregister_chrdev(major, DEVICE_NAME);
 

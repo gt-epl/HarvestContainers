@@ -19,7 +19,8 @@ int cmpweights (const void * c1, const void * c2) {
     if ( s1->curr_weight == s2->curr_weight ) {
         return (harvest_core_weights[s1->cpuid] - 
                harvest_core_weights[s2->cpuid]);
-    } else {
+    }
+    else {
         return (s1->curr_weight - s2->curr_weight);
     }
 }
@@ -29,42 +30,49 @@ int getInterruptWeights()
     int ret;
     int num_changes = 0;
     struct harvest_core newHarvestCores[64];
+    // printf("Waiting on module to update IRQ stats\n");
     idleCpuStats->update_irq = 1;
-    while (idleCpuStats->update_irq == 1) {
+    while(idleCpuStats->update_irq == 1) {
       continue;
     }
-
+    // printf("Checking for IRQ reorder\n");
     /* Calculate weights for last sample period, copy into harvest_cores */
-    for (int i = 0; i < NUMCPUS; i++) {
+    for(int i = 0; i < NUMCPUS; i++) {
         newHarvestCores[i].cpuid = cpuList[i];
         newHarvestCores[i].curr_weight = (idleCpuStats->curr_irq_times[cpuList[i]] - 
                                           prev_irq_times[cpuList[i]]);
-        if (newHarvestCores[i].curr_weight > 0) num_changes++;
+        // printf(" (%lld - %lld = %lld) ", 
+        //   idleCpuStats->curr_irq_times[cpuList[i]],
+        //   prev_irq_times[cpuList[i]], 
+        //   newHarvestCores[i].curr_weight);
+        if(newHarvestCores[i].curr_weight > 0) num_changes++;
         prev_irq_times[cpuList[i]] = idleCpuStats->curr_irq_times[cpuList[i]];
     }
-
-    /* IRQ stats didn't change; return without doing anything */
-    if (num_changes == 0) {
+    // printf("\n");
+    if(num_changes == 0) {
+      // printf("No changes in IRQ stats\n");
       return 0;
     }
-
     /* IRQ handling time(s) changed, so sort harvest_cores by weight */
     qsort(newHarvestCores, NUMCPUS, sizeof(struct harvest_core), cmpweights);
 
-    /* Check if harvest cores order changed;
-     * if no, skip rebalance */
-    if (newHarvestCores[NUMCPUS-1].cpuid == harvestCores[NUMCPUS-1]) {
+    /* First check to see if the last harvest core did not change;
+     * if same, no need to rebalance immediately */
+    if(newHarvestCores[NUMCPUS-1].cpuid == harvestCores[NUMCPUS-1]) {
+        // printf("Sorted cores, but no change in core ordering\n");
         return 0;
     }
 
-    /* Check if newHarvestCores is different from
-     * harvest_cores. If yes, need to rebalance */
-    for (int i = 0; i < NUMCPUS; i++) {
-      if (newHarvestCores[i].cpuid != harvestCores[i]) {
-        /* Copy new cores to existing harvestCores */
-        for (int i = 0; i < NUMCPUS; i++) {
+    /* Check to see if newHarvestCores is different from
+     * harvest_cores. If so, then we need to rebalance */
+    for(int i = 0; i < NUMCPUS; i++) {
+      if(newHarvestCores[i].cpuid != harvestCores[i]) {
+        /* First we need to copy the new cores to existing harvestCores */
+        for(int i = 0; i < NUMCPUS; i++) {
             harvestCores[i] = newHarvestCores[i].cpuid;
         }
+        // printf("Harvest core order changed based on IRQ activity\n");
+        // printHarvestCores();
         return 1;
       }
     }

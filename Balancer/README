@@ -1,0 +1,26 @@
+# Harvest Balancer w/ Dynamic targetIdleCores (Experimental)
+
+This branch adds code implementing dynamic adjustment of targetIdleCores during Balancer runs.
+
+Configuration options for surplus/deficit thresholds and sample rates are set via environment variables.
+Add the following lines to the test script where you call `runBalancer` to set these options:
+
+```
+export DEFICIT_THRESHOLD=0.45
+export SURPLUS_THRESHOLD=0.55
+export POSTDEFICIT_BUFFER_SAMPLE_RATE=500000
+export POSTSURPLUS_BUFFER_SAMPLE_RATE=10000
+```
+
+NOTE: Values for sample rates are specified in microseconds, and are represented in nanoseconds internal to Balancer.
+
+Balancer will report the values you set when it starts up:
+
+```
+[Balancer] DEFICIT_THRESHOLD: 0.45
+[Balancer] SURPLUS_THRESHOLD: 0.55
+[Balancer] POSTSURPLUS_BUFFER_SAMPLE_RATE: 10000000
+[Balancer] POSTDEFICIT_BUFFER_SAMPLE_RATE: 500000000
+```
+
+Actions taken by dynamic Balancer will be written to `dynamic.log`

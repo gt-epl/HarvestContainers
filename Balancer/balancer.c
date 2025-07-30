@@ -15,7 +15,7 @@
 void printHarvestCores()
 {
     printf("Harvest Cores => ");
-    for (int c = 0; c < NUMCPUS; c++) {
+    for(int c = 0; c < NUMCPUS; c++) {
         printf("%d ", harvestCores[c]);
     }
     printf("\n");
@@ -24,20 +24,19 @@ void printHarvestCores()
 
 int CoreIsActive(int core_id, unsigned long long mask)
 {
-    if ((mask & (1ULL << (core_id)))) return 1;
-    
-    return 0;
+    if( (mask & (1ULL << (core_id))) ) return 1;
+    else return 0;
 }
 
 void SchedAllSecondary(void)
 {
-    while (idleCpuStats->updatingPids == 1) {
-        if (idleCpuStats->balancerControl == -1) return;
+    while(idleCpuStats->updatingPids == 1) {
+        if(idleCpuStats->balancerControl == -1) return;
         continue;
     }
     idleCpuStats->needs_rebalance = rebalanceAction;
-    while (idleCpuStats->needs_rebalance == rebalanceAction) {
-        if (idleCpuStats->balancerControl == -1) return;
+    while(idleCpuStats->needs_rebalance == rebalanceAction) {
+        if(idleCpuStats->balancerControl == -1) return;
         continue;
     }
     #ifdef VERBOSE
@@ -55,38 +54,41 @@ int GetMinSecondaryCores(void)
 	return 1;
 }
 
-void ComputeSecondaryAffinityMask(struct ctr_info *ctr)
+void ComputeSecondaryAffinityMask(int totalEligibleCores,
+    int SpareCores)
 {
-    int actualCoresAllocated = 0;
     int c, i = 0;
+    CPU_ZERO(&secondary_mask);
+    lastSecondaryCoreCount = currSecondaryCoreCount;
+    currSecondaryCoreCount = 0;
+    setAffinityMask = 0;
 
     /* If we have no other spares to allocate, return */
-    if (ctr->SpareCoresToAllocate <= 0) {
-        //CoresAllocatedToSecondary = currSecondaryCoreCount;
-        ctr->CoresAllocatedToSecondary = 0;
+    if(SpareCores <= 0) {
+        CoresAllocatedToSecondary = currSecondaryCoreCount;
         return;
     }
 
     /* Otherwise assign spare cores to Secondary */
-    for (c = ctr->totalEligibleCores; c > (0); c--) {
+    for(c = totalEligibleCores;
+        c > (0); c--) {
         /* If core was NOT set in the last affinity mask AND it is now ACTIVE,
          * assume it is occupied by a Primary thread and skip giving it to
          * Secondary */
-        if (!CoreIsActive(ctr->cpuList[c-1], lastAffinityMask) && 
-            CoreIsActive(ctr->cpuList[c-1], currIdleMask)) {
+        if(!CoreIsActive(harvestCores[c-1], lastAffinityMask) && 
+            CoreIsActive(harvestCores[c-1], currIdleMask)) {
                 continue;
-        } else {
-            CPU_SET(ctr->cpuList[c-1], &secondary_mask);
-            setAffinityMask |= 1ULL << (ctr->cpuList[c-1]);
-            idleCpuStats->affinity_list[affinityListPos] = ctr->cpuList[c-1];
-            affinityListPos++;
+        }
+        else {
+            CPU_SET(harvestCores[c-1], &secondary_mask);
+            setAffinityMask |= 1ULL << (harvestCores[c-1]);
+            idleCpuStats->affinity_list[i] = harvestCores[c-1];
             i++;
             currSecondaryCoreCount++;
-            actualCoresAllocated++;
-            if (i == ctr->SpareCoresToAllocate) break;
+            if(i == SpareCores) break;
         }
     }
-    ctr->CoresAllocatedToSecondary = actualCoresAllocated;
+    CoresAllocatedToSecondary = currSecondaryCoreCount;
     return;
 }
 
@@ -114,36 +116,42 @@ void WakeSecondary(void)
     //send_sig(SIGCONT, secondary_task, 0);
 }
 
-int AllocateCoresToSecondary()
+int AllocateCoresToSecondary(int pid, int totalEligibleCores, int SpareCoresToAllocate)
 {
-    CPU_ZERO(&secondary_mask);
-    lastSecondaryCoreCount = currSecondaryCoreCount;
-    currSecondaryCoreCount = 0;
-    setAffinityMask = 0;
-    affinityListPos = 0;
-    /* TODO: This function should go through each Primary container struct,
-     * call ComputeSecondaryAffinityMask() to update the Secondary's 
-     * mask based on that Primary's spare cores, and then apply 
-     * the new affinity mask based on the results
-     * NOTE: FOR NOW WE JUST CALL THIS FOR c1-c3 */
-    ComputeSecondaryAffinityMask(c1);
-    //ComputeSecondaryAffinityMask(c2);
-    //ComputeSecondaryAffinityMask(c3);
+    /* Note: In Win version processSuspended is defined here and the suspended
+     * process never seems to wake up because processSuspended always results
+     * in 0 on call to AllocateCoresToSecondary()
+     * Comment out 'int processSuspended = 0' to utilize Sleep/Wake
+    */
+    /*
+    int processSuspended = 0;
+    if (SpareCoresToAllocate == 0) {
+		if (!processSuspended) {
+			SleepSecondary();
+			processSuspended = 1;
+		}
+		return 0;
+	}
+    */
+    ComputeSecondaryAffinityMask(totalEligibleCores, SpareCoresToAllocate);
 
-    if (currSecondaryCoreCount == 0) {
+    if(currSecondaryCoreCount == 0) {
         rebalanceAction = 3;
         idleCpuStats->num_affinity = currSecondaryCoreCount;
         SchedAllSecondary();
         return 1;
-    } else if (currSecondaryCoreCount > lastSecondaryCoreCount) {
+    }
+    else if(currSecondaryCoreCount > lastSecondaryCoreCount) {
         rebalanceAction = 1;
-    } else if (currSecondaryCoreCount < lastSecondaryCoreCount) {
+    }
+    else if(currSecondaryCoreCount < lastSecondaryCoreCount) {
         rebalanceAction = 2;
-    } else {
+    }
+    else {
         rebalanceAction = 1;
     }
 
-    if (setAffinityMask != lastAffinityMask) {
+    if(setAffinityMask != lastAffinityMask) {
         idleCpuStats->num_affinity = currSecondaryCoreCount;
         SchedAllSecondary();
     } else return 0;
@@ -155,4 +163,23 @@ int AllocateCoresToSecondary()
     }
     */
     return 1;
+}
+
+void TakeCoresFromSecondary(int coresToTake)
+{
+	CoresAllocatedToSecondary -= coresToTake;
+    ComputeSecondaryAffinityMask(totalEligibleCores, CoresAllocatedToSecondary);
+}
+
+void ReleaseCoresToSecondary(int coresToRelease)
+{
+	CoresAllocatedToSecondary += coresToRelease;
+    ComputeSecondaryAffinityMask(totalEligibleCores, CoresAllocatedToSecondary);
+}
+
+void UpdateCoreTracking(int newSecondaryCores, int oldSecondaryCores)
+{
+	int coreDifference = newSecondaryCores - oldSecondaryCores;
+	if (coreDifference < 0) TakeCoresFromSecondary(-coreDifference);
+	else if (coreDifference > 0) ReleaseCoresToSecondary(coreDifference);
 }

@@ -23,7 +23,7 @@ static int qidlecpu_release(struct inode *inodep, struct file *filep)
 static int qidlecpu_open(struct inode *inodep, struct file *filep)
 {
     int ret = 0;
-    // if (!mutex_trylock(&qidlecpu_mutex)) {
+    // if(!mutex_trylock(&qidlecpu_mutex)) {
     //     pr_alert("qidlecpu: device busy!\n");
     //     ret = -EBUSY;
     //     return ret;
@@ -69,7 +69,7 @@ static ssize_t qidlecpu_read(struct file *filep, char *buffer, size_t len,
     // u64 siq;
     // int pos;
     // unsigned long long irq_times[64] = {0};
-    // for (pos = 0; pos < NUMCPUS; pos++) {
+    // for(pos = 0; pos < NUMCPUS; pos++) {
     //     kcpustat_cpu_fetch(&kcpustat, cpuList[pos]);
     //     hiq = div_u64(cpustat[CPUTIME_IRQ] * 9, (9ull * NSEC_PER_SEC + (USER_HZ / 2)) / USER_HZ);
     //     siq = div_u64(cpustat[CPUTIME_SOFTIRQ] * 9, (9ull * NSEC_PER_SEC + (USER_HZ / 2)) / USER_HZ);

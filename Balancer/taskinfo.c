@@ -6,10 +6,12 @@
 #include "taskinfo.h"
 
 /* Code in this file heavily based on Linux taskset utility:
- * https://github.com/karelzak/util-linux/blob/master/schedutils/taskset.c */
+ * https://github.com/karelzak/util-linux/blob/master/schedutils/taskset.c
+ */
 
 /* Opens /proc/<pid>/task, which contains pids of all children
- * belonging to <pid> */
+ * belonging to <pid> 
+ */
 struct proc_tasks *proc_open_tasks(pid_t pid)
 {
     struct proc_tasks *tasks;

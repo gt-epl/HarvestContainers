@@ -4,22 +4,6 @@ Balancer/balancer
 
 Listener/listener
 
-Monitor/.Module.symvers.cmd
-Monitor/.modules.order.cmd
-Monitor/.monitor.o.cmd
-Monitor/.qidlecpu.ko.cmd
-Monitor/.qidlecpu.mod.cmd
-Monitor/.qidlecpu.mod.o.cmd
-Monitor/.qidlecpu.o.cmd
-Monitor/Module.symvers
-Monitor/modules.order
-Monitor/monitor.o
-Monitor/qidlecpu.ko
-Monitor/qidlecpu.mod
-Monitor/qidlecpu.mod.c
-Monitor/qidlecpu.mod.o
-Monitor/qidlecpu.o
-
 TestFramework/bin/balancer
 TestFramework/bin/dynamic-balancer
 TestFramework/bin/listener
