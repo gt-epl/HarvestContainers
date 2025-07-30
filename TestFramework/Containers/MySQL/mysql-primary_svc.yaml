@@ -9,6 +9,6 @@ spec:
   ports:
     - name: mysql
       port: 3306
-      nodePort: 23306
+      nodePort: 32306
   selector:
     name: mysql-server
