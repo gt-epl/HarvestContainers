@@ -8,7 +8,7 @@ spec:
   type: NodePort
   ports:
     - port: 20000
-      nodePort: 30000
+      nodePort: 30001
       name: http
   selector:
     name: dedup-secondary-server

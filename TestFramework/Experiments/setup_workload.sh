@@ -24,6 +24,16 @@ docker pull asarma31/memcached-primary:latest
 echo "[+] Setting up mysql-primary"
 docker pull mysql:5.7
 
+echo "[+] Setting up x264-secondary"
+cd ~/HarvestContainers/TestFramework/Containers/x264/
+bash get_inputs.sh
+docker pull asarma31/x264:latest-secondary
+
+echo "[+] Setting up dedup-secondary"
+cd ~/HarvestContainers/TestFramework/Containers/Dedup/
+bash get_inputs.sh
+docker pull asarma31/dedup:latest-secondary
+
 echo "[+] clabcl1 setup complete."
 exit
 
@@ -72,6 +82,16 @@ echo "[+] Setting up cpubully-secondary"
 cd ~/HarvestContainers/TestFramework/Containers/CPUBully/
 kubectl apply -f cpubully-secondary_pod.yaml
 kubectl apply -f cpubully-secondary_svc.yaml
+
+echo "[+] Setting up x264-secondary"
+cd ~/HarvestContainers/TestFramework/Containers/x264/
+kubectl apply -f x264-secondary_pod.yaml
+kubectl apply -f x264-secondary_svc.yaml
+
+echo "[+] Setting up dedup-secondary"
+cd ~/HarvestContainers/TestFramework/Containers/Dedup/
+kubectl apply -f dedup-secondary_pod.yaml
+kubectl apply -f dedup-secondary_svc.yaml
 
 echo "[+] clabsvr setup complete."
 exit

@@ -8,7 +8,7 @@ spec:
   type: NodePort
   ports:
     - port: 20000
-      nodePort: 30000
+      nodePort: 30002
       name: http
   selector:
     name: x264-secondary-server

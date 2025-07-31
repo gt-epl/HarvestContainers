@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: x264
-      image: x264
+      image: asarma31/x264:latest-secondary
       imagePullPolicy: Never
       ports:
         - name: x264 
@@ -19,4 +19,4 @@ spec:
   volumes:
     - name: x264-input-vol
       hostPath:
-        path: /mnt/data/inputs
+        path: /mnt/data/x264.inputs
