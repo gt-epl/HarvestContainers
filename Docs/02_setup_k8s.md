@@ -2,33 +2,33 @@
 
 ## Introduction
 ---
-This document assumes we have a cloudlab setup with all deps installed (including docker and k8s). In this document we setup the k8s cluster semi-automatically.
+This document assumes we have a Cloudlab setup with all dependencies installed (including Docker and Kubernetes). In this document we will set up the Kubernetes cluster semi-automatically.
 
-## Setup master on clabsvr
+## Setup Master on clabsvr Node
+- On the clabsvr node, run the following command:
 ```
 cd /project/HarvestContainers/TestFramework/K8s
 ./master-setup.sh
 ```
-- You will have to enter the ip of the node. If master is setup on the first cloudlab node. This is `192.168.10.10`
-
-## Setup client on clabcl1
-1. First run `client-setup-1.sh`
-2. Run the join command as obtained in the output of master setup above.
-    1. On the console, join command will appear as follows:
+- You will have to enter the IP address of the master node. If master is set up on the first Cloudlab node (clabsvr), this IP address should be `192.168.10.10`
+- Be sure to note the `kubeadm join` command that the setup procedure prints out (you will need this command when setting up the client). The command looks similar to the following:
     ```bash
-    Then you can join any number of worker nodes by running the following on each as root:
-
     kubeadm join 192.168.10.10:6443 \
         --token t96nws.p6bl55kopf44hvfu \
         --discovery-token-ca-cert-hash sha256:fe1a54199d3e99b1e4461ce2e93b5bed1b2b301cc80a7336912d15cf2645128b
     ``` 
-3. Run `client-setup-2.sh` and enter IP of the cloudlab node. (This should be `192.168.10.11`)
 
-## Verify cluster.
-1. On master node. Execute follow to see nodes added - 
+## Setup Client on clabcl1 Node
+1. First run `cd /project/HarvestContainers/TestFramework/K8s && ./client-setup-1.sh` on the clabcl1 node
+2. Use sudo to run the `kubeadm join` command obtained from the output of master setup above.
+3. Run `client-setup-2.sh` and enter IP of the clabcl1 node (this should be `192.168.10.11` by default)
+
+## Verify Cluster Setup
+1. On the master node (clabsvr), execute the following command to see which client nodes have been successfully added: 
     ```
     kubectl get nodes -o wide
     ```
+2. If successful, you should see a node with name "clabcl1" and status "Ready"
 
 ## Next: [Setup Workload](./03_setup_workload.md)
 
