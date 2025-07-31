@@ -2,65 +2,68 @@
 
 ## Introduction
 All experiments (functional & performance) were carried out on resources made available by [Cloudlab](https://www.cloudlab.us).
-We make use of `c6420` (16 core Xeon Gold (Skylake)) machines. Refer [cloudlab docs](http://docs.cloudlab.us/hardware.html) for more details.
+We make use of the Cloudlab `c6420` machines (16 core Xeon Gold Skylake CPUs). Refer to [Cloudlab docs](http://docs.cloudlab.us/hardware.html) for more details.
 
-Performance runs were carried out on `c6420` machines. We highly recommend you use the `c6420` profiles for artifact evaluation. This profile has already been setup with most necessary dependencies.
+Since performance runs were carried out on Cloudlab `c6420` machines, we highly recommend you use these machines and their associated profiles for artifact evaluation. This profile has already been setup with most necessary dependencies.  
+
+If using our provided Cloudlab image, we assume test scripts will be located in the `/project` directory. This directory already exists in the image, but you will need to take ownership of it for your current user via `sudo chown -R $USER /project` and then change to the directory via `cd /project`.
 
 If you'd like to setup from scratch, refer to `HarvestContainers/TestFramework/Bootstrap/firstboot.sh` for all dependencies.
 
 ## Requesting Resources on Cloudlab
-We make use of the following profiles to instantiate resources (aka creating an experiment on cloudlab)
-A **2 node cluster** is sufficient for all experiments. 
+A **2 node cluster** is sufficient for all experiments.
 
-**From here on, we will refer the nodes as clabsvr with IP 192.168.10.10; and clabcl1 with IP 192.168.10.11**
+**From here on, we will assume a two node setup and refer the nodes as clabsvr with IP 192.168.10.10 and clabcl1 with IP 192.168.10.11.**
 
-Profiles:
-1. For `c6420` - https://www.cloudlab.us/show-profile.php?uuid=70b392b8-0dc8-11ed-aacb-e4434b2381fc
+We make use of the following profile to instantiate resources and run experiments on Cloudlab c6420 hardware:
+- https://www.cloudlab.us/show-profile.php?uuid=70b392b8-0dc8-11ed-aacb-e4434b2381fc
 
->  **Note:** Cloudlab only allows you to create an experiment for upto 16 hours. You may request a reservation to create an experiment and then extend it for longer.
+>  **Note:** By default, Cloudlab only allows you to create an experiment that reserves resources for up to 16 hours. You may request a reservation to create an experiment and then extend it for longer if needed.
 
+### Clone Repository on All Nodes
 
-### Clone repository on all nodes
-
+First, clone the latest version of the project repository from the following URL:
 ```bash
 git clone https://github.com/gt-epl/HarvestContainers.git
 ```
 
-### Setting up ssh access.
+### Setting Up SSH Access.
 ---
-- We will rely on ssh keys and aliases to access and manage the physical nodes.
-- All test scripts make use of ssh aliases to address and trigger runs on different machines using the aliases specified in the template config [../TestFramework/Experiments/cloudlab/template.config](../TestFramework/Experiments/cloudlab/template.config)
-- Create one key-pair (cloudlab_key / cloudlab_key.pub) exclusive for cloudlab management using `ssh-keygen` shared across nodes
-- Servers are assigned ip addresses in the range 192.168.10.0/24. For a 2 node cluser, this is 192.168.10.10 and 192.168.10.11
-- You can resue the provided template ssh config file. Make sure the keys and usernames are updated. oneliner to configure username: `sed "s/USER/$USER/g" template.config > ~/.ssh/config`
-- Ensure both the ssh config and generated public key is available on both clabsvr and clabcl1 in the `~/.ssh/` path. The output of the public key should be appendend to `~/.ssh/authorized_keys` file.
-- verification: `ssh clabsvr` and `ssh clabcl1` should work on both nodes.
+- We rely on SSH keys and aliases to access and manage physical nodes used to perform evaluations.
+- All test scripts make use of SSH aliases to address and trigger runs on different machines using the aliases specified in the template config [../TestFramework/Experiments/cloudlab/template.config](../TestFramework/Experiments/cloudlab/template.config)
+- Create a key-pair (cloudlab_key / cloudlab_key.pub) exclusive for Cloudlab management using `ssh-keygen`. This key-pair will be used on all nodes.
+- Cloudlab assigns RFC 1918 private IP addresses to nodes from the 192.168.10.0/24 subnet. For a 2 node cluser, nodes will use IPs 192.168.10.10 and 192.168.10.11
+- A template SSH config file (placed in ~/.ssh/config) is provided below. Make sure the keys and usernames are updated before using this template. Oneliner to configure username: `sed "s/USER/$USER/g" template.config > ~/.ssh/config`
+- Ensure both the SSH config and generated keys are available on both clabsvr and clabcl1 in the `~/.ssh/` path. The output of the public key should be appendend to `~/.ssh/authorized_keys` file. Keys should have permissions `0600` (e.g., `chmod 0600 ~/.ssh/cloudlab_key`).
+- Verify SSH config by confirming commands `ssh clabsvr` and `ssh clabcl1` work on both nodes.
 
-template config file:
+Template SSH config file:
 ```
 Host clabsvr
-  User USER                           <--- change this
+  User USER                           # <--- change this
   Hostname 192.168.10.10
   Port 22
-  IdentityFile ~/.ssh/cloudlab_key    <--- generated by you using ssh-keygen
+  IdentityFile ~/.ssh/cloudlab_key    # <--- generated by you using ssh-keygen
   StrictHostKeyChecking=no
 
-Host cl1
-  User USER                           <--- change this
+Host clabcl1
+  User USER                           # <--- change this
   Hostname 192.168.10.11
   Port 22
-  IdentityFile ~/.ssh/cloudlab_key    <--- generated by you using ssh-keygen
+  IdentityFile ~/.ssh/cloudlab_key    # <--- generated by you using ssh-keygen
   StrictHostKeyChecking=no
 ```
 
-> Optional: You may create a key-pair for github access as well, since most of the code will need to be pulled from the remote repo.
+> Optional: You may create a key-pair for Github access as well, since most of the code will need to be pulled from the remote repo.
 
-### Fix CPU frequencies for reproducible runs on both nodes
-Run `HarvestContainers/TestFramework/Bootstrap/powerfix.sh`
+### Fix CPU Frequencies for Reproducible Runs on Both Nodes
+- To ensure consistent performance when running experiments, CPU frequencies should be static.
+- Fix CPU frequencies by running `HarvestContainers/TestFramework/Bootstrap/powerfix.sh`
 
 ### Setup Disk
-1. cloudlab nodes have limited disk space. But we can mount more disk space. Do the following for both nodes.
-2. Check if disk space is available (more than 500GB)
+1. Some Cloudlab nodes may be provisioned with limited disk space (e.g., 16 GB for the root partition). More disk space will be needed during experiments.
+2. You can increase disk space on the c6420 machines via our helper script: [../TestFramework/Bootstrap/cloudlab/c6420_disk_setup.sh](../TestFramework/Bootstrap/cloudlab/c6420_disk_setup.sh)
+3. To manually increase disk space, use the following commands:
     ```bash
     # Commonly, for c6420 machines, disk space can be mounted on /dev/sda4. 
     lsblk -a
@@ -79,24 +82,22 @@ Run `HarvestContainers/TestFramework/Bootstrap/powerfix.sh`
     my_group=$(groups | awk '{ print $1}') # gets the cloudlab group
     sudo chgrp -R $my_group /mnt/extra
     ```
-3. helper script for c6420 machines: [../TestFramework/Bootstrap/cloudlab/c6420_disk_setup.sh](../TestFramework/Bootstrap/cloudlab/c6420_disk_setup.sh)
 
 
 ### Relocate Docker Files
-By default, Docker data directory is located at /var/lib/docker. This location is problematic on Cloudlab, since / is typically provisioned with 16 GB.  We can relocate Docker data directory with the following steps. Do the following for both nodes (clabsvr and clabcl1)
-1. First stop the Docker service with sudo service docker stop
-2. Make a new Docker data dir with sudo mkdir /mnt/extra/docker
-3. Then edit /etc/docker/daemon.json (you will likely be creating this file from scratch) and include the following:
+By default, the Docker data directory is located at /var/lib/docker. This location is problematic on Cloudlab, since the root partition is typically provisioned with 16 GB. Relocate the Docker data directory by running our helper script [../TestFramework/Bootstrap/cloudlab/relocate_docker.sh](../TestFramework/Bootstrap/cloudlab/relocate_docker.sh) or performing the following steps on both nodes (clabsvr and clabcl1):
+1. Stop the Docker service with `sudo service docker stop`
+2. Make a new Docker data dir with `sudo mkdir /mnt/extra/docker`
+3. Edit `/etc/docker/daemon.json` (you will likely be creating this file from scratch) and include the following:
 
 {
     "data-root": "/mnt/extra/docker"
 }
 
-4. Add yourself to the docker group to make life easier sudo usermod -aG docker <your_username> (you'll need to logout/login for this to take effect, but afterwards you can run docker commands w/o sudo)
+4. Add yourself to the `docker` group to make life easier by running command `sudo usermod -aG docker <your_username>` (you'll need to logout/login for this to take effect, but afterwards you can run docker commands w/o sudo)
 5. Logout and Login again for changes to take effect.
-6. helper script: [../TestFramework/Bootstrap/cloudlab/relocate_docker.sh](../TestFramework/Bootstrap/cloudlab/relocate_docker.sh) 
 
 
-> Ensure CPU frequencies are fixed, disks are allocated and Docker has been relocated on all cloudlab nodes before proceeding.
+> Ensure CPU frequencies are fixed, disks are allocated and Docker has been relocated on all Cloudlab nodes before proceeding.
 
 ### Next: [Setup Kubernetes](./02_setup_k8s.md)
