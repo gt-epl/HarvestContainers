@@ -10,6 +10,16 @@ There 3 key results from the paper.
 2. Fig 8. that demonstrates its efficacy in shielding a Primary from interrupt interference of a NetworkBully.
 3. Fig 9. that it can work even when multiple primary and secondary containers are involved.
 
+## pinning cores for reproducibility
+runall.sh does this for you. You will want to pin your cores for reproducibility. Make use of the utilities under TestFramework/Tools/
+
+```bash
+./pincores.sh 2,4,6,8,10,12,14,16 clabcl1 memcached-primary
+./pincores.sh 2,4,6,8,10,12,14,16 clabcl1 mysql-primary
+./pincores.sh 2,4,6,8,10,12,14,16 clabcl1 xapian-primary
+./pincores.sh 2,4,6,8,10,12,14,16,18 clabcl1 cpubully-secondary
+```
+
 
 ### Fig 5.
 

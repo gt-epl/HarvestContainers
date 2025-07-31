@@ -16,6 +16,15 @@ mkdir -p /mnt/extra/results
 mkdir -p /mnt/extra/logs
 EOF
 
+echo "[+] Pinning cores for workloads"
+cur_dir=$(pwd)
+cd ~/HarvestContainers/TestFramework/Tools/
+./pincores.sh 2,4,6,8,10,12,14,16 clabcl1 memcached-primary
+./pincores.sh 2,4,6,8,10,12,14,16 clabcl1 mysql-primary
+./pincores.sh 2,4,6,8,10,12,14,16 clabcl1 xapian-primary 
+./pincores.sh 2,4,6,8,10,12,14,16,18 clabcl1 cpubully-secondary
+cd $cur_dir
+
 # memcached: ~116 minutes
 start_time=$(date +%s)
 
