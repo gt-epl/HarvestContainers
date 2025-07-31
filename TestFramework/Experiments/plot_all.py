@@ -90,6 +90,8 @@ def plot_latency_and_util(app_name, ax1, ax2):
     ax2.bar(xticks, baseline_util, width, label='Primary', color=Baseline_Color, edgecolor='black', linewidth=0.5)
     ax2.bar(xticks, secondary_progress, width, label='Harvest', bottom=baseline_util, color=Harvest_Color, edgecolor='black', linewidth=0.5)
     ax2.set_ylim(0,8)
+    ax2.set_xticks(xticks)
+    ax2.set_xticklabels(qps_k)
 
     ax2.grid(color='gray', ls='--', which='major', lw=0.6)
     ax2.grid(color='gray', ls='--', which='minor', lw=0.2)
@@ -106,4 +108,7 @@ axs[0, 1].set_yticks(range(0,5))
 axs[0, 1].set_yticklabels(range(0,4500,1000))
 axs[0, 1].set_ylim(0, 4)
 
+# %%
+df = combine_df('memcached')
+df[df['qps'] == 90000]
 # %%

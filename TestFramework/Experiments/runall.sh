@@ -1,7 +1,7 @@
 #!/bin/bash
 
 start=1
-end=3
+end=1
 dur=60
 
 #./<workload>_runner.sh <trial_num> <num_secondary_workers> <tic> <qps> <dur> <harvest/baseline>
