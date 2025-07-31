@@ -53,7 +53,7 @@ ssh $YCSB_ALIAS bash <<EOF
   sudo -s 
   cd $RESDIR
   if [ ! -f "summary" ]; then
-    echo "uuid mean p90 p95 p99 min max" > summary
+    echo "uuid mean p90 p95 p99 min max ops" > summary
   fi
   echo "${LOGFILE} \$(python ~/HarvestContainers/TestFramework/Containers/MySQL/parsemysql.py ${RESDIR}/$LOGFILE.out)" | tee -a summary
 EOF
@@ -105,7 +105,7 @@ harvest() {
   export DEFICIT_BUFFER_SAMPLE_RATE=500000
   export SURPLUS_BUFFER_SAMPLE_RATE=1000000
   export AGGIDLE_CORES_COUNT_THRESHOLD=2.5
-  export LOWIDLEFREQ_THRESHOLD=0.053
+  export LOWIDLEFREQ_THRESHOLD=0.002
   export LOW_TIC=2
 
   runBalancer

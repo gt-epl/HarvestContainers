@@ -5,7 +5,7 @@ import matplotlib.pylab as pylab
 import re
 
 root_path = '/mnt/extra'
-root_path = './final_runs'
+root_path = './final_runs2'
 
 secondary_baseline_progress = 64.0
 
@@ -54,6 +54,7 @@ def extract_combined_progress(progress_str):
 # %%
 def plot_latency_and_util(app_name, ax1, ax2):
     width = 0.4
+    rotation = -30
 
     df = combine_df(app_name)
     baseline_df = df[df['type'] == 'baseline']
@@ -80,7 +81,7 @@ def plot_latency_and_util(app_name, ax1, ax2):
     qps_k = [f"{int(qps[i]/1000) if qps[i] % 1000 == 0 else qps[i]/1000}k" for i in range(len(qps))]
     xticks = range(len(qps_k))
     ax1.set_xticks(xticks)
-    ax1.set_xticklabels(qps_k)
+    ax1.set_xticklabels(qps_k, rotation=rotation)
 
     ax1.grid(color='gray', ls='--', which='major', lw=0.6)
     ax1.grid(color='gray', ls='--', which='minor', lw=0.2)
@@ -91,24 +92,29 @@ def plot_latency_and_util(app_name, ax1, ax2):
     ax2.bar(xticks, secondary_progress, width, label='Harvest', bottom=baseline_util, color=Harvest_Color, edgecolor='black', linewidth=0.5)
     ax2.set_ylim(0,8)
     ax2.set_xticks(xticks)
-    ax2.set_xticklabels(qps_k)
+    ax2.set_xticklabels(qps_k, rotation=rotation)
 
     ax2.grid(color='gray', ls='--', which='major', lw=0.6)
     ax2.grid(color='gray', ls='--', which='minor', lw=0.2)
 
 # %%
-fig, axs = plt.subplots(2, 2, figsize=(15, 10))
+fig, axs = plt.subplots(2, 3, figsize=(15, 6))
 plot_latency_and_util('memcached', axs[0, 0], axs[1, 0])
 axs[0, 0].set_yticks(range(0,130,20))
 axs[0, 0].set_yticklabels(range(0,130,20))
 axs[0, 0].set_ylim(0, 130)
 
-plot_latency_and_util('xapian', axs[0, 1], axs[1, 1])
-axs[0, 1].set_yticks(range(0,5))
-axs[0, 1].set_yticklabels(range(0,4500,1000))
-axs[0, 1].set_ylim(0, 4)
+plot_latency_and_util('mysql', axs[0, 1], axs[1, 1])
+axs[0, 1].set_yticks(range(0,900,200))
+axs[0, 1].set_yticklabels(range(0,900,200))
+axs[0, 1].set_ylim(0, 900)
 
-# %%
-df = combine_df('memcached')
-df[df['qps'] == 90000]
+
+plot_latency_and_util('xapian', axs[0, 2], axs[1, 2])
+axs[0, 2].set_yticks(range(0,5))
+axs[0, 2].set_yticklabels(range(0,4500,1000))
+axs[0, 2].set_ylim(0, 4)
+
+
+fig.savefig('figs/fig5.pdf', bbox_inches='tight')
 # %%

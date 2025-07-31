@@ -35,6 +35,10 @@ start_time=$(date +%s)
 
 mv *_config.out /mnt/extra/config/
 
+echo "[+] copy results to clabcl1"
+rsync -avz clabsvr:/mnt/extra/results/memcached /mnt/extra/results/
+rsync -avz clabsvr:/mnt/extra/results/mysql /mnt/extra/results/
+
 end_time=$(date +%s)
 
 echo "[+] Sanity runtime: $((end_time - start_time)) seconds"

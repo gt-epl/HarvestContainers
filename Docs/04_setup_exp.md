@@ -23,7 +23,12 @@ runall.sh does this for you. You will want to pin your cores for reproducibility
 
 ### Fig 5.
 
-- The provided [runall.sh](../TestFramework/Experiments/runall.sh) should execute all 3 Primary workloads and generate results.
+- Use the [sanity.sh](../TestFramework/Experiments/sanity.sh) to test if the workloads are setup properly.
+    - Output structure that are app specific:
+        - /mnt/extra/config/<app_name>_config.out for info on the runs
+        - /mnt/extra/results/<app_name>/summary : for latency results
+        - /mnt/extra/logs/<app_name>/summary : for cpu util / progress results
+- The provided [runall.sh](../TestFramework/Experiments/runall.sh) should execute all 3 Primary workloads and generate results and should take ~6 hours.
 - It should also generate the plot that can be found in the [figs/](../TestFramework/Experiments/figs/) folder.
 - You will find the data and results used in the paper under [final_runs](../TestFramework/Experiments/final_runs/).
 - [plot_all.py](../TestFramework/Experiments/plot_all.py) can be modifed to use the existing data instead.
