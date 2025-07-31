@@ -48,29 +48,3 @@ echo "[+] Fix symlink for libevent-2.1.so.6 (mutilate dependency)"
 sudo ln -s /lib/x86_64-linux-gnu/libevent-2.1.so.7 /lib/x86_64-linux-gnu/libevent-2.1.so.6
 echo "[+] Done."
 echo ""
-
-if [ "${TEST_USER}" == "ach" ]; then
-  # ach setup
-  echo "[+] Copying dotfiles"
-  # Usage: copy_dotfiles.sh <project_dir> <repo_name>
-  /project/HarvestContainers/TestFramework/Bootstrap/dotfiles/ach/copy_dotfiles.sh /project HarvestContainers
-fi
-
-if [ "${ENV_TYPE}" == "EC2" ]; then
-  # ec2 setup
-  sudo apt-get install linux-tools-5.4.0-1058-aws -y
-  echo "[+] Adding 'ubuntu' user to 'docker' group"
-  sudo usermod -aG docker ubuntu
-fi
-
-if [ "${ENV_TYPE}" == "CLOUDLAB" ]; then
-  # cloudlab setup
-  sudo groupadd harvest
-  echo "[+] Adding 'ach' user to 'docker' group"
-  sudo usermod -aG docker ach
-  sudo usermod -aG harvest ach
-  echo "[+] Adding 'asarma31' user to 'docker' group"
-  sudo usermod -aG docker asarma31
-  sudo usermod -aG harvest asarma31
-  # TODO: Create symlink for mutilate's libevent lib dep
-fi
