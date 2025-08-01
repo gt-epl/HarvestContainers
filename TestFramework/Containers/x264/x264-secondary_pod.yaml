@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: x264
-      image: asarma31/x264:latest-secondary
+      image: asarma31/x264-secondary:latest
       imagePullPolicy: Never
       ports:
         - name: x264 
