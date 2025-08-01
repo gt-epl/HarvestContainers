@@ -6,6 +6,6 @@ RUN apt-get install -y python3-pip && pip3 install setproctitle
 
 
 COPY harvest_launcher.py .
-COPY run_nwbully.sh .
+COPY run_networkbully.sh .
 
 ENTRYPOINT ["python3", "./harvest_launcher.py"]
