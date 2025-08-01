@@ -1,4 +1,4 @@
-path="final_runs2"
+path="final_runs"
 mkdir -p $path/config
 mkdir -p $path/logs/memcached
 mkdir -p $path/results/memcached

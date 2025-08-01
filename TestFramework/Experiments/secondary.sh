@@ -1,35 +1,50 @@
 #!/bin/bash
+
+# if you source secondary.sh, make sure to set the following variables accordingly prior to calling functions in this file.
 MASTER="clabsvr"
 SECONDARY=cpubully-secondary
-#SECONDARY="x264-secondary"
-#SECONDARY="terasort-secondary"
-#SECONDARY="dedup-secondary"
+ITER=1
+SECONDARY_WORKERS=9
 
 
 
 secondary_pod_id() {
-  #SECONDARY=fibtest-secondary
   PODFILE=${SECONDARY}_podinfo.txt
   rm -f $PODFILE
   bash ../Tools/get_pod_info.sh $MASTER $SECONDARY
   echo "pod$(cat $PODFILE | jq -r .metadata.uid)"
 }
 
+# secondary <duration> <host> 
 secondary() {
-  SECONDARY_IP="192.168.10.11"
 
   #WARNING note duration in minutes for cpubully
-  let SECONDARY_DURATION=$1/60
+  if [ $SECONDARY == "cpubully-secondary" ]; then
+    let SECONDARY_DURATION=$1/60
+  else
+    SECONDARY_DURATION=$1
+  fi
+
+  SECONDARY_HOST=$2
+  if [ -z "$SECONDARY_HOST" ]; then
+    SECONDARY_HOST="192.168.10.11:30000"
+  fi
 
 
-  curl --data "{\"duration\":\"${SECONDARY_DURATION}\",\"workers\":\"${SECONDARY_WORKERS}\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://${SECONDARY_IP}:30000
+  curl --data "{\"duration\":\"${SECONDARY_DURATION}\",\"workers\":\"${SECONDARY_WORKERS}\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://${SECONDARY_HOST}
 }
 
 get_secondary_progress() {
-  get_cpubully_progress
-  #get_x264_progress
-  #get_terasort_progress
-  #get_dedup_progress
+  if [ $SECONDARY == "cpubully-secondary" ]; then
+    get_cpubully_progress
+  elif [ $SECONDARY == "x264-secondary" ]; then
+    get_x264_progress
+  elif [ $SECONDARY == "dedup-secondary" ]; then
+    get_dedup_progress
+  else
+    echo "[-] Secondary workload not supported"
+    exit 1
+  fi
 }
 
 get_cpubully_progress() {
@@ -38,16 +53,12 @@ get_cpubully_progress() {
 
 get_x264_progress() {
   ssh clabsvr "kubectl logs x264-secondary | tac | grep -m 1 -e x264 -B 10" > secondary.log
-  head -n -1 secondary.log | awk '{s+=$2} END {print s}'
-}
-
-get_terasort_progress() {
-  grep -i "finishing task" /mnt/extra/terasort.outputs/stderr.log  | wc -l
+  head -n -1 secondary.log | awk '{s+=$2} END {print s}' | sed 's/^[ \t]*//;s/[ \t]*$//'
 }
 
 get_dedup_progress() {
   ssh clabsvr "kubectl logs dedup-secondary | tac | grep -m1 dedup, -B 500" > secondary.log
-  cat secondary.log
+  cat secondary.log | sed 's/^[ \t]*//;s/[ \t]*$//'
 }
 
 main() {

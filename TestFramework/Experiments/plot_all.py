@@ -1,18 +1,16 @@
 # %%
-import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pylab
+import pandas as pd
 import re
-
-root_path = '/mnt/extra'
-root_path = './final_runs2'
-
-secondary_baseline_progress = 64.0
 
 Harvest_Color='#4cadab'
 Harvest_Marker='v'
 Baseline_Color='#0d68a8'
 Baseline_Marker='s'
+
+# root_path = '/mnt/extra/'
+root_path = './final_runs'
 
 dsz=18
 params = {'legend.fontsize': dsz,
@@ -24,8 +22,7 @@ params = {'legend.fontsize': dsz,
 pylab.rcParams.update(params)
 
 # %%
-
-def combine_df(app_name):
+def combine_df(app_name, root_path):
     logs_path = f'{root_path}/logs/{app_name}/summary'
     results_path = f'{root_path}/results/{app_name}/summary'
     config_path = f'{root_path}/config/{app_name}_config.out'
@@ -50,13 +47,12 @@ def extract_combined_progress(progress_str):
     if match:
         return float(match.group(1)) / secondary_baseline_progress
     return None
-
 # %%
 def plot_latency_and_util(app_name, ax1, ax2):
     width = 0.4
     rotation = -30
 
-    df = combine_df(app_name)
+    df = combine_df(app_name, root_path)
     baseline_df = df[df['type'] == 'baseline']
     harvest_df = df[df['type'] == 'harvest']
 
@@ -103,18 +99,22 @@ plot_latency_and_util('memcached', axs[0, 0], axs[1, 0])
 axs[0, 0].set_yticks(range(0,130,20))
 axs[0, 0].set_yticklabels(range(0,130,20))
 axs[0, 0].set_ylim(0, 130)
+axs[0, 0].set_ylabel('Latency (ms)')
+axs[0, 0].set_title('Memcached')
 
 plot_latency_and_util('mysql', axs[0, 1], axs[1, 1])
 axs[0, 1].set_yticks(range(0,900,200))
 axs[0, 1].set_yticklabels(range(0,900,200))
 axs[0, 1].set_ylim(0, 900)
-
+axs[0, 1].set_title('MySQL')
+axs[1, 1].set_xlabel('QPS')
 
 plot_latency_and_util('xapian', axs[0, 2], axs[1, 2])
 axs[0, 2].set_yticks(range(0,5))
 axs[0, 2].set_yticklabels(range(0,4500,1000))
 axs[0, 2].set_ylim(0, 4)
-
+axs[0, 2].set_title('Xapian')
 
 fig.savefig('figs/fig5.pdf', bbox_inches='tight')
+
 # %%
