@@ -15,11 +15,30 @@ secondary_pod_id() {
   echo "pod$(cat $PODFILE | jq -r .metadata.uid)"
 }
 
+irq_secondary() {
+  DURATION=$1
+  HOST=$2
+
+  num_clients=10
+  for((i=0;i<num_clients;i++)); do
+    port=$((30301+i))
+    iperf3 -c $HOST -t $DURATION -p $port > /tmp/$port.out 2>&1 &
+  done
+
+  curl --data "{\"duration\":\"${DURATION}\",\"workers\":\"${SECONDARY_WORKERS}\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://192.168.10.11:30000
+
+}
+
+
 # secondary <duration> <host> <secondary>
 secondary() {
 
   if [ ! -z $3 ]; then
     SECONDARY=$3
+  fi
+
+  if [ $SECONDARY == "nwbully-secondary" ]; then
+    irq_secondary $1 $2
   fi
 
   #WARNING note duration in minutes for cpubully
@@ -39,7 +58,7 @@ secondary() {
 }
 
 get_secondary_progress() {
-  if [ $SECONDARY == "cpubully-secondary" ]; then
+  if [ $SECONDARY == "cpubully-secondary" ] || [ $SECONDARY == "nwbully-secondary" ]; then
     get_cpubully_progress
   elif [ $SECONDARY == "x264-secondary" ]; then
     get_x264_progress

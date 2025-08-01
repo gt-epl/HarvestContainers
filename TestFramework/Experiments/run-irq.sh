@@ -1,19 +1,51 @@
-#for ((core=0;core<32;core++)); do
-core=$1
- 
+#!/bin/bash
+start=1
+end=1
 
-  echo "[+] Start for core: $core"
+echo "[+] Disbale Intel Flow Director"
+sudo ethtool -K ethX ntuple off
 
-  cat /proc/softirqs | grep "NET_RX\|NET_TX\|CPU0" | tr -s " " > c${core}old.csv
-  echo "[+] start iperf server"
-  pkill iperf3
-  taskset --cpu-list $core iperf3 -s > debug.svr 2>&1 &
-  echo "[+] start iperf client"
-  ssh clabcl0 "iperf3 -c 192.168.10.10 -t 60" > debug.cl 2>&1
-  pkill iperf3
-  cat /proc/softirqs | grep "NET_RX\|NET_TX\|CPU0" | tr -s " " > c${core}new.csv
-  echo "[+] get interrupt diff"
-  python process-irq.py c${core}old.csv c${core}new.csv >> diff.csv
-  echo "---"
-  exit 1;
-#done
+echo "[+] Disbale IRQ balance"
+sudo systemctl stop irqbalance
+
+echo "[+] save interrupt numbers specific to cloudlab interface: enp24s0f1"
+cat /proc/interrupts | grep "enp24s0f1" | awk '{print $1}' | sed 's/://g' > /mnt/extra/config/irq_nums
+
+# primary core list
+CPULIST=2,4,6,8,10,12,14,16,18
+
+echo "[+] pin irq to $CPULIST"
+cat /mnt/extra/config/irq_nums | while read irq; do
+  echo $CPULIST | sudo tee /proc/irq/$irq/smp_affinity_list
+done
+
+echo "[+] Pinning cores for workloads"
+cur_dir=$(pwd)
+cd ~/HarvestContainers/TestFramework/Tools/
+./pincores.sh $CPULIST clabcl1 memcached-primary
+./pincores.sh $CPULIST clabcl1 xapian-primary
+./pincores.sh $CPULIST clabcl1 mysql-primary
+./pincores.sh 18 clabcl1 cpubully-secondary
+./pincores.sh 20 clabcl1 nwbully-secondary
+cd $cur_dir
+
+for((i=start; i<=end; i++)); do
+  for qps in 10000 50000 100000; do
+    ./memcached_runner.sh $i 9 7 $qps 60 harvest-irq
+    ./memcached_runner.sh $i 9 7 $qps 60 harvest-irq "aware"
+  done
+done
+
+for((i=start; i<=end; i++)); do
+  for qps in 500 2500 4000; do
+    ./xapian_runner.sh $i 9 7 $qps 60 harvest
+    ./xapian_runner.sh $i 9 7 $qps 60 harvest-irq "aware"
+  done
+done
+
+for((i=start; i<=end; i++)); do
+  for qps in 1000 4000 8000; do
+    ./mysql_runner.sh $i 9 7 $qps 60 harvest
+    ./mysql_runner.sh $i 9 7 $qps 60 harvest-irq "aware"
+  done
+done

@@ -106,3 +106,5 @@ ax.bar(mid_norm_progress, color=colors[1])
 ax.bar(high_norm_progress, color=colors[2])
 ax.set_ylabel('Cores Harvested')
 
+fig.savefig('figs/fig9.pdf', bbox_inches='tight')
+

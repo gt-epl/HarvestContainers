@@ -1,10 +1,8 @@
-#!/bin/bash
+num_workers=$1
+num_duration=$2
 
-source ../../Config/SYSTEM.sh
-source ../../Config/NETWORKBULLY.sh
 
-# Uncomment to use local vars
-#CNTR_NAME="networkbully"
-#CNTR_PORT="20011"
-
-docker run --cgroup-parent=${CGROUP_PARENT_PATH} --cpuset-cpus=${CORE_RANGE} --name ${CNTR_NAME}_1 --rm -p 127.0.0.1:${CNTR_PORT}:5101 -v ${WORKING_DIR}/Containers/NetworkBully/outputs:/outputs ${CNTR_NAME}
+for((i=0;i<num_workers;i++)); do
+  port=$((20001+i))
+  iperf3 -s -p $port > iperf_svr.out 2>&1 &
+done

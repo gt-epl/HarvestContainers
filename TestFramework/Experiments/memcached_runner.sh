@@ -18,7 +18,12 @@ QPS=$4
 DURATION=$5
 TYPE="$6"
 
-META="mutilate"
+if [ -z $7 ]; then
+  META="mutilate"
+else
+  META=$7
+fi
+
 LOGDIR="/mnt/extra/logs/memcached"
 RESDIR="/mnt/extra/results/memcached"
 
@@ -47,7 +52,7 @@ runMemcached() {
 } 
 
 calcUtil() {
-  if [ $TYPE == "harvest" ]; then
+  if [ $TYPE == "harvest" ] || [ $TYPE == "harvest-irq" ]; then
     PROGRESS=$(get_secondary_progress)
   fi
   UTIL_SUMMARY=$(grep "average active cores" cpuloggersummary.log | awk '{print $NF}' | tr "\n" " ")
@@ -126,7 +131,11 @@ harvest() {
   runMemcached &
 
   echo "[+] Start secondary workload in foreground"
-  secondary $DURATION
+  if [ $TYPE == "harvest-irq" ]; then
+    secondary $DURATION "192.168.10.11:30300" "nwbully-secondary"
+  else  
+    secondary $DURATION
+  fi
 
 
   echo "[+] Stopping Modules"
@@ -155,7 +164,7 @@ harvest() {
 
 if [ $TYPE == "baseline" ]; then
   baseline
-elif [ $TYPE == "harvest" ]; then
+elif [ $TYPE == "harvest" ] || [ $TYPE == "harvest-irq" ]; then
   harvest
 elif [ $TYPE == "secondary" ]; then
   secondary 1
