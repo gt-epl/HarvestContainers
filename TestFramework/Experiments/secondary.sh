@@ -15,8 +15,12 @@ secondary_pod_id() {
   echo "pod$(cat $PODFILE | jq -r .metadata.uid)"
 }
 
-# secondary <duration> <host> 
+# secondary <duration> <host> <secondary>
 secondary() {
+
+  if [ ! -z $3 ]; then
+    SECONDARY=$3
+  fi
 
   #WARNING note duration in minutes for cpubully
   if [ $SECONDARY == "cpubully-secondary" ]; then
