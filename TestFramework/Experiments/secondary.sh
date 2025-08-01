@@ -19,11 +19,13 @@ irq_secondary() {
   DURATION=$1
   HOST=$2
 
+  ssh clabsvr bash <<EOF
   num_clients=10
   for((i=0;i<num_clients;i++)); do
     port=$((30301+i))
-    iperf3 -c $HOST -t $DURATION -p $port > /tmp/$port.out 2>&1 &
+    iperf3 -c 192.168.10.11 -t $DURATION -p $port > /tmp/$port.out 2>&1 &
   done
+EOF
 
   curl --data "{\"duration\":\"${DURATION}\",\"workers\":\"${SECONDARY_WORKERS}\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://192.168.10.11:30000
 
