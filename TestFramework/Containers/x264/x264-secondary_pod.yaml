@@ -19,4 +19,4 @@ spec:
   volumes:
     - name: x264-input-vol
       hostPath:
-        path: /mnt/data/x264.inputs
+        path: /mnt/extra/x264.inputs
