@@ -22,8 +22,8 @@ irq_secondary() {
   ssh clabsvr bash <<EOF
   num_clients=10
   for((i=0;i<num_clients;i++)); do
-    port=$((30301+i))
-    iperf3 -c 192.168.10.11 -t $DURATION -p $port > /tmp/$port.out 2>&1 &
+    port=\$((30301+i))
+    iperf3 -c 192.168.10.11 -t $DURATION -p \$port > /tmp/\$port.out 2>&1 &
   done
 EOF
 
