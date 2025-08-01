@@ -15,7 +15,7 @@ spec:
           protocol: TCP
       volumeMounts:
         - name: dedup-input-vol
-          mountPath: /mnt/data/inputs
+          mountPath: /mnt/extra/inputs
   volumes:
     - name: dedup-input-vol
       hostPath:

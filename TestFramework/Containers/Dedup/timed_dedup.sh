@@ -16,9 +16,7 @@ timeout -s SIGINT ${DURATION} ./dedup -v -c -i /mnt/extra/inputs/synthetic.data 
 timeout -s SIGINT ${DURATION} ./dedup -v -c -i /mnt/extra/inputs/synthetic.data -o /mnt/extra/inputs/results9.out
 
 echo "dedup, $DURATION seconds, $NUM_THREADS workers"
-FinalSize=$(ls -alh /mnt/extra/inputs/results*.out)
-TotalSize="dummy"
-echo $FinalSize
+TotalSize=$(du -ch /mnt/extra/inputs/results*.out | grep total | awk '{print $1}')
 echo $TotalSize
 #cat /tmp/dedup.out
 rm -f /mnt/extra/inputs/results*.out

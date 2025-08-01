@@ -80,7 +80,7 @@ low_norm_p99 = xapian_norm_p99.loc['LOW'], mysql_norm_p99.loc['LOW']
 mid_norm_p99 = xapian_norm_p99.loc['MEDIUM'], mysql_norm_p99.loc['MEDIUM']
 high_norm_p99 = xapian_norm_p99.loc['HIGH'], mysql_norm_p99.loc['HIGH']
 
-baseline_x264_progress = 1
+baseline_x264_progress = 363 # frames
 baseline_dedup_progress = 1
 
 harvest_x264_progress = extract_x264_progress(harvest_df['x264_progress'].values)
