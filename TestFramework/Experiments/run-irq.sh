@@ -29,6 +29,9 @@ cd ~/HarvestContainers/TestFramework/Tools/
 ./pincores.sh 20 clabcl1 nwbully-secondary
 cd $cur_dir
 
+# start iperf servers
+curl --data "{\"duration\":\"${DURATION}\",\"workers\":\"10\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://192.168.10.11:30300/start
+
 for((i=start; i<=end; i++)); do
   for qps in 10000 50000 100000; do
     ./memcached_runner.sh $i 9 7 $qps 60 harvest-irq
@@ -49,3 +52,6 @@ for((i=start; i<=end; i++)); do
     ./mysql_runner.sh $i 9 7 $qps 60 harvest-irq "aware"
   done
 done
+
+# kill iperf servers
+curl --data "{\"duration\":\"${DURATION}\",\"workers\":\"10\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://192.168.10.11:30300/stop
