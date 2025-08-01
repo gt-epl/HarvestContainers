@@ -170,10 +170,10 @@ harvest() {
   runMysql &
 
   echo "[+] Start x264 workload in background"
-  secondary $DURATION 192.168.10.11:30001
+  secondary $DURATION 192.168.10.11:30002
 
   echo "[+] Start dedup workload in foreground"
-  secondary $DURATION 192.168.10.11:30002
+  secondary $DURATION 192.168.10.11:30001
 
   echo "[+] Stopping Modules"
   stopLogging idlecpu
