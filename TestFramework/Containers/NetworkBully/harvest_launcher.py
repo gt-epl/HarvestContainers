@@ -43,7 +43,8 @@ class Server(BaseHTTPRequestHandler):
         # Run cpubully with posted parameters
         if self.path == "/start":
             subprocess.run(["echo", trial_string])
-            subprocess.run(["bash", "run_networkbully.sh", num_workers, num_duration])
+            subprocess.Popen(["bash", "run_networkbully.sh", num_workers, num_duration],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True, start_new_session=True)
             subprocess.run(["echo", "--------------------------------------"])
         elif self.path == "/stop":
             subprocess.run(["pkill", "-f", "iperf3"])
