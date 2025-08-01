@@ -27,7 +27,8 @@ irq_secondary() {
   done
 EOF
 
-  curl --data "{\"duration\":\"${DURATION}\",\"workers\":\"${SECONDARY_WORKERS}\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://192.168.10.11:30000
+  let dur=$DURATION/60
+  curl --data "{\"duration\":\"${dur}\",\"workers\":\"${SECONDARY_WORKERS}\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://192.168.10.11:30000/
 
 }
 
