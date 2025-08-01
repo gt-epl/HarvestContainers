@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nwbully-secondary-svc
+  labels:
+    name: nwbully-secondary-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 20000
+      nodePort: 30300
+      name: http
+    - port: 20001
+      nodePort: 30301
+      name: iperf1
+    - port: 20002
+      nodePort: 30302
+      name: iperf2
+    - port: 20003
+      nodePort: 30303
+      name: iperf3
+    - port: 20004
+      nodePort: 30304
+      name: iperf4
+    - port: 20005
+      nodePort: 30305
+      name: iperf5
+    - port: 20006
+      nodePort: 30306
+      name: iperf6
+    - port: 20007
+      nodePort: 30307
+      name: iperf7
+    - port: 20008
+      nodePort: 30308
+      name: iperf8
+    - port: 20009
+      nodePort: 30309
+      name: iperf9
+    - port: 20010
+      nodePort: 30310
+      name: iperf10
+  selector:
+    name: nwbully-secondary-server

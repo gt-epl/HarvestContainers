@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql
+  labels:
+    name: mysql-hc-server
+spec:
+  containers:
+    - name: mysql
+      image: mysql:5.7
+      resources:
+        requests:
+            cpu: "8"
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: harvest
+        - name: MYSQL_DATABASE
+          value: ycsb
+        - name: MYSQL_USER
+          value: ycsb
+        - name: MYSQL_PASSWORD
+          value: ycsb
+      ports:
+        - name: mysql
+          containerPort: 3306
+          protocol: TCP
+      volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+        - name: mysql-initdb
+          mountPath: /docker-entrypoint-initdb.d
+  volumes:
+    - name: mysql-persistent-storage
+      persistentVolumeClaim:
+        claimName: mysql-pv-claim
+    - name: mysql-initdb
+      configMap:
+        name: mysql-initdb-config
+  nodeSelector:
+    mysql_pod: primary
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb-config
+data:
+  initdb.sql: |-
+    CREATE TABLE usertable (YCSB_KEY VARCHAR(255) PRIMARY KEY, FIELD0 TEXT, FIELD1 TEXT, FIELD2 TEXT, FIELD3 TEXT, FIELD4 TEXT, FIELD5 TEXT, FIELD6 TEXT, FIELD7 TEXT, FIELD8 TEXT, FIELD9 TEXT, FIELD10 TEXT, FIELD11 TEXT, FIELD12 TEXT, FIELD13 TEXT, FIELD14 TEXT, FIELD15 TEXT, FIELD16 TEXT, FIELD17 TEXT, FIELD18 TEXT, FIELD19 TEXT);

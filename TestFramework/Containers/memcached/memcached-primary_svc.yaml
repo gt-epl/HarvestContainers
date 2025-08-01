@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: memcached-svc
+  labels:
+    name: memcached-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 11212
+      nodePort: 31212
+      name: memcached
+  selector:
+    name: memcached-server

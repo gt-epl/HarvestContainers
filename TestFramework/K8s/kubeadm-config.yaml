@@ -1,0 +1,14 @@
+# kubeadm-config.yaml
+kind: ClusterConfiguration
+apiVersion: kubeadm.k8s.io/v1beta3
+kubernetesVersion: v1.23.1
+networking:
+    podSubnet: 10.244.0.0/16
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: 192.168.10.10
+  bindPort: 6443
+---
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+cgroupDriver: cgroupfs

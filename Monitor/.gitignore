@@ -1,0 +1,14 @@
+*.o
+*.mod.c
+*.mod
+*.ko
+Module.symvers
+modules.order
+.idlecpu.o.cmd
+.qidlecpu.ko.cmd
+.qidlecpu.mod.cmd
+.qidlecpu.mod.o.cmd
+.qidlecpu.o.cmd
+.vscode
+.Module.symvers.cmd
+.modules.order.cmd

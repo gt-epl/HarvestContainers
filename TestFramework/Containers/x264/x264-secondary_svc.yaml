@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: x264-secondary-svc
+  labels:
+    name: x264-secondary-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 20000
+      nodePort: 30002
+      name: http
+  selector:
+    name: x264-secondary-server

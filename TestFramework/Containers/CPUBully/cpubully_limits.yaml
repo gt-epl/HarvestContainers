@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cpubully-one
+  labels:
+    name: cpubully-server-one
+spec:
+  containers:
+    - name: cpubully-one
+      image: cpubully
+      resources:
+        limits:
+          cpu: "4"
+      imagePullPolicy: Never
+      ports:
+        - name: cpubully-one
+          containerPort: 20000
+          protocol: TCP
+  nodeSelector:
+    podtype: harvest

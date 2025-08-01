@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nwbully-secondary
+  labels:
+    name: nwbully-secondary-server
+spec:
+  containers:
+    - name: nwbully
+      image: asarma31/nwbully-secondary:latest
+      imagePullPolicy: Never
+      ports:
+        - name: nwbully-two
+          containerPort: 20000
+          protocol: TCP
+        - name: nwbully-iperf1
+          containerPort: 20001
+          protocol: TCP
+        - name: nwbully-iperf2
+          containerPort: 20002
+          protocol: TCP
+        - name: nwbully-iperf3
+          containerPort: 20003
+          protocol: TCP
+        - name: nwbully-iperf4
+          containerPort: 20004
+          protocol: TCP
+        - name: nwbully-iperf5
+          containerPort: 20005
+          protocol: TCP
+        - name: nwbully-iperf6
+          containerPort: 20006
+          protocol: TCP
+        - name: nwbully-iperf7
+          containerPort: 20007
+          protocol: TCP
+        - name: nwbully-iperf8
+          containerPort: 20008
+          protocol: TCP
+        - name: nwbully-iperf9
+          containerPort: 20009
+          protocol: TCP
+        - name: nwbully-iperf10
+          containerPort: 20010
+          protocol: TCP

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cpubully-secondary
+  labels:
+    name: cpubully-secondary-server
+spec:
+  containers:
+    - name: cpubully
+      image: asarma31/cpubully:latest
+      imagePullPolicy: Never
+      ports:
+        - name: cpubully-two
+          containerPort: 20000
+          protocol: TCP
