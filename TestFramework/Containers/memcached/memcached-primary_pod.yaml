@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: memcached-primary
+  labels:
+    name: memcached-server
+spec:
+  containers:
+    - name: memcached-primary
+      image: asarma31/memcached-primary:latest
+      imagePullPolicy: Never
+      ports:
+        - name: memcached
+          containerPort: 11212
+          protocol: TCP
+      env:
+        - name: MEMCACHED_THREADS
+          value: "16"
+        - name: MEMCACHED_CONNS
+          value: "32768"
+        - name: MEMCACHED_RAM
+          value: "16384"

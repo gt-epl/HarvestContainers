@@ -1,0 +1,30 @@
+#!/bin/bash
+
+ENV_TYPE="CLOUDLAB"
+
+
+if [ "${ENV_TYPE}" == "CLOUDLAB" ]
+then
+  WORKING_DIR="${HOME}/HarvestContainers/TestFramework"
+  CPULIST="2,4,6,8,10,12,14,16"
+  SECONDARY_CPULIST="18"
+  MONITOR_BINDCPU="24"
+  BALANCER_BINDCPU="26"
+  LISTENER_BINDCPU="28"
+  CPU_FREQ="2600000"
+fi
+
+MIN_SECONDARY_CORES="0"
+TARGET_IDLE_CORES="1"
+
+BIN_PATH="${WORKING_DIR}/bin"
+BALANCER_BINARY="balancer"
+IDLECPU_BINARY="qidlecpu.ko"
+LOGGER_BINARY="cpulogger.ko"
+LISTENER_BINARY="listener"
+
+BULLY_CNTR="cpubully"
+LS_CNTR="ls"
+TERASORT_CNTR="terasort"
+
+EXPERIMENT_DIR="${WORKING_DIR}/Experiments"

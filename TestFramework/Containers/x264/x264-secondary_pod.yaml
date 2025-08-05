@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: x264-secondary
+  labels:
+    name: x264-secondary-server
+spec:
+  containers:
+    - name: x264
+      image: asarma31/x264-secondary:latest
+      imagePullPolicy: Never
+      ports:
+        - name: x264 
+          containerPort: 20000
+          protocol: TCP
+      volumeMounts:
+        - name: x264-input-vol
+          mountPath: /mnt/data/inputs
+  volumes:
+    - name: x264-input-vol
+      hostPath:
+        path: /mnt/extra/x264.inputs

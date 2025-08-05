@@ -1,0 +1,3 @@
+uuid type iter sec_workers target_idle qps duration metadata
+ba9fa267-231f-4542-b1b3-8011c950142f baseline 1 1 1 10000 60 mutilate
+ed16b661-e0d0-48ec-984d-4ae0d12adb46 harvest 1 9 7 10000 60 mutilate

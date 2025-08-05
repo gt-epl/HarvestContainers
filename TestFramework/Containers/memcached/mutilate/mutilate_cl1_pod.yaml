@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mutilate-cl1
+  labels:
+    name: mutilate-cl1
+spec:
+  containers:
+    - name: mutilate
+      image: asarma31/mutilate:latest
+      imagePullPolicy: Never
+      ports:
+        - name: mutilate
+          containerPort: 20003
+          protocol: TCP
+      env:
+        - name: MUTILATE_THREADS
+          value: "16"
+        - name: MUTILATE_CONNS
+          value: "256"
+        - name: MUTILATE_DURATION
+          value: "60"
+        - name: MEMCACHED_SERVER
+          value: "127.0.0.1"
+      volumeMounts:
+        - name: mutilate-results
+          mountPath: /app/results
+  volumes:
+    - name: mutilate-results
+      hostPath:
+        path: /mnt/extra/results/memcached
+        type: DirectoryOrCreate

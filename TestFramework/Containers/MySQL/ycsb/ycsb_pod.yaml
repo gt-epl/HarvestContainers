@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ycsb
+  labels:
+    name: ycsb
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+  containers:
+    - name: ycsb
+      image: asarma31/ycsb:latest
+      imagePullPolicy: Never
+      ports:
+        - name: ycsb
+          containerPort: 20002
+          protocol: TCP
+      env:
+        - name: YCSB_THREADS
+          value: "8"
+        - name: YCSB_CORE_RANGE
+          value: "1-31"
+      volumeMounts:
+        - name: ycsb-results
+          mountPath: /app/results
+  volumes:
+    - name: ycsb-results
+      hostPath:
+        path: /mnt/extra/results/mysql
+        type: DirectoryOrCreate

@@ -1,0 +1,56 @@
+# Create a more restrictive policy that bypasses failsafe
+apiVersion: crd.projectcalico.org/v1
+kind: GlobalNetworkPolicy
+metadata:
+  name: strict-host-deny
+spec:
+  # Apply to host endpoints
+  selector: projectcalico.org/name != ""
+  types:
+  - Ingress
+  order: 10  # High priority
+  preDNAT: true
+  ingress:
+  # Allow only specific essential services
+  - action: Allow
+    protocol: TCP
+    destination:
+      ports: [22]  # SSH only
+  - action: Allow
+    protocol: TCP
+    destination:
+      ports: [6443]  # Kubernetes API
+  - action: Allow
+    protocol: TCP
+    source:
+      nets: ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]  # Private networks only
+  # Deny everything else
+  - action: Deny
+---
+apiVersion: crd.projectcalico.org/v1
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-host-egress
+spec:
+  selector: projectcalico.org/name != ""
+  types:
+  - Egress
+  egress:
+  - action: Allow
+---
+# Recreate HostEndpoints with auto-detection
+apiVersion: crd.projectcalico.org/v1
+kind: HostEndpoint
+metadata:
+  name: server-enp24s0f0-strict
+spec:
+  interfaceName: "enp24s0f0"
+  node: CLABSVR
+---
+apiVersion: crd.projectcalico.org/v1
+kind: HostEndpoint
+metadata:
+  name: client0-enp24s0f0-strict
+spec:
+  interfaceName: "enp24s0f0"
+  node: CLABCL1
