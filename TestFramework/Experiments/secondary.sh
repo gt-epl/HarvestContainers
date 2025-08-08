@@ -78,13 +78,11 @@ get_cpubully_progress() {
 }
 
 get_x264_progress() {
-  ssh clabsvr "kubectl logs x264-secondary | tac | grep -m 1 -e x264 -B 10" > secondary.log
-  head -n -1 secondary.log | awk '{s+=$2} END {print s}' | sed 's/^[ \t]*//;s/[ \t]*$//'
+  ssh clabsvr "kubectl logs x264-secondary | tail -n1"
 }
 
 get_dedup_progress() {
-  ssh clabsvr "kubectl logs dedup-secondary | tac | grep -m1 dedup, -B 500" > secondary.log
-  cat secondary.log | sed 's/^[ \t]*//;s/[ \t]*$//'
+  ssh clabsvr "kubectl logs dedup-secondary | tail -n1"
 }
 
 main() {
