@@ -29,10 +29,10 @@ rsync -avz clabsvr:/mnt/extra/results/memcached /mnt/extra/results/
 rsync -avz clabsvr:/mnt/extra/results/mysql /mnt/extra/results/
 
 ssh clabsvr bash <<EOF
-    rm -rf /mnt/extra/results/memcached/*
-    rm -rf /mnt/extra/results/mysql/*
-    rm -rf /mnt/extra/logs/memcached/*
-    rm -rf /mnt/extra/logs/mysql/*
+    sudo rm -rf /mnt/extra/results/memcached/*
+    sudo rm -rf /mnt/extra/results/mysql/*
+    sudo rm -rf /mnt/extra/logs/memcached/*
+    sudo rm -rf /mnt/extra/logs/mysql/*
 EOF
 
 for app in memcached mysql xapian; do

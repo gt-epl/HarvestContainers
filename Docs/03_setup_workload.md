@@ -4,7 +4,7 @@
 
 This document assumes we have a Kubernetes (K8s) cluster running on Cloudlab. We will setup all the Primary & Secondary containers along with their associated input data.
 
-If SSH aliases are set up, then the below helper script should install and configure the workloads:
+If SSH aliases are set up, then the below helper script will install and configure the workloads. It should be run on the clabcl1 node:
 
 **Automated Helper Script:** [../TestFramework/Experiments/setup_workload.sh](../TestFramework/Experiments/setup_workload.sh)
 
@@ -112,33 +112,45 @@ Continue to perform the steps below for manual setup if you do not wish to run `
 docker pull asarma31/cpubully:latest
 
 # On clabsvr, deploy container
-cd /project/HarvestContainers/TestFramework/Containers/CPUBully
+cd ~/HarvestContainers/TestFramework/Containers/CPUBully
 kubectl apply cpubully-secondary_pod.yaml
 
 # Expose service on node port
 kubectl apply cpubully-secondary_svc.yaml
 ```
+### NetworkBully
+```bash
+# On clabcl1, pull docker image
+docker pull asarma31/nwbully-secondary:latest
 
-**x264**
+# On clabsvr, deploy container
+cd ~/HarvestContainers/TestFramework/Containers/NetworkBully
+kubectl apply nwbully-secondary_pod.yaml
+
+# Expose service on node port
+kubectl apply nwbully-secondary_svc.yaml
+```
+
+### x264
 ```bash
 # On clabcl1, pull docker image
 docker pull asarma31/x264-secondary:latest
 
 # On clabsvr, deploy container
-cd /project/HarvestContainers/TestFramework/Containers/x264
+cd ~/HarvestContainers/TestFramework/Containers/x264
 kubectl apply x264-secondary_pod.yaml
 
 # Expose service on node port
 kubectl apply x264-secondary_svc.yaml
 ```
 
-**Dedup**
+### Dedup
 ```bash
 # On clabcl1, pull docker image
 docker pull asarma31/dedup-secondary:latest
 
 # On clabsvr, deploy container
-cd /project/HarvestContainers/TestFramework/Containers/dedup
+cd ~/HarvestContainers/TestFramework/Containers/dedup
 kubectl apply dedup-secondary_pod.yaml
 
 # Expose service on node port

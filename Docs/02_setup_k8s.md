@@ -7,7 +7,7 @@ This document assumes we have a Cloudlab setup with all dependencies installed (
 ## Setup Master on clabsvr Node
 - On the clabsvr node, run the following command:
 ```
-cd /project/HarvestContainers/TestFramework/K8s
+cd ~/HarvestContainers/TestFramework/K8s
 ./master-setup.sh
 ```
 - You will have to enter the IP address of the master node. If master is set up on the first Cloudlab node (clabsvr), this IP address should be `192.168.10.10`
@@ -19,7 +19,7 @@ cd /project/HarvestContainers/TestFramework/K8s
     ``` 
 
 ## Setup Client on clabcl1 Node
-1. First run `cd /project/HarvestContainers/TestFramework/K8s && ./client-setup-1.sh` on the clabcl1 node
+1. First run `cd ~/HarvestContainers/TestFramework/K8s && ./client-setup-1.sh` on the clabcl1 node
 2. Use sudo to run the `kubeadm join` command obtained from the output of master setup above.
 3. Run `client-setup-2.sh` and enter IP of the clabcl1 node (this should be `192.168.10.11` by default)
 

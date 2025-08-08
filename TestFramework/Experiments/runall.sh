@@ -27,6 +27,7 @@ done
 
 echo "[+] copy results to clabcl1"
 rsync -avz clabsvr:/mnt/extra/results/memcached /mnt/extra/results/
+sudo chown -R $USER /mnt/extra/results/*
 
 end_time=$(date +%s)
 echo "[+] memcached runtime: $((end_time - start_time)) seconds"
@@ -60,6 +61,7 @@ done
 
 echo "[+] copy results to clabcl1"
 rsync -avz clabsvr:/mnt/extra/results/mysql /mnt/extra/results/
+sudo chown -R $USER /mnt/extra/results/*
 
 end_time=$(date +%s)
 echo "[+] mysql runtime: $((end_time - start_time)) seconds"

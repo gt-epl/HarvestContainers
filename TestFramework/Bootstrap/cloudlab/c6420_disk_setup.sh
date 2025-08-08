@@ -5,7 +5,7 @@ lsblk -a
 sudo mkfs -t ext4 /dev/sda4
 
 # create drive. Please stick to same name for drive
-sudo mkdir /mnt/extra
+sudo mkdir -p /mnt/extra
 
 # mount drive. This will be valid till next boot
 sudo mount /dev/sda4 /mnt/extra
