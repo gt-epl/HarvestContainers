@@ -23,6 +23,52 @@ For correctly determining the CPU utilization of Primary and Secondary workloads
 ./pincores.sh 2,4,6,8,10,12,14,16,18 clabcl1 cpubully-secondary
 ```
 
+### Pre-Flight: Ensure Workload Data Is Loaded
+
+- Ensure that test data has been loaded for each Primary by running the following commands and checking for output similar to the provided examples:
+```bash
+# Check xapian; run the following command on clabcl1; you should see the same file names as shown below:
+
+user@clabcl1:~/HarvestContainers/TestFramework/Experiments$ ls /dev/shm/xapian.inputs/xapian/wiki/
+flintlock  position.baseA  position.DB     postlist.baseB  record.baseA  record.DB       termlist.baseB
+iamchert   position.baseB  postlist.baseA  postlist.DB     record.baseB  termlist.baseA  termlist.DB
+
+# Check mysql; run the following command on clabsvr; you should see the same kind of random data string in field1:
+
+user@clabsvr:~/HarvestContainers/TestFramework/Experiments$ kubectl exec -it mysql-primary -- /bin/bash -c "mysql -u root -pharvest -e 'select field1 from ycsb.usertable limit 1;'"
+mysql: [Warning] Using a password on the command line interface can be insecure.
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| field1                                                                                                                                                                                                                                                     |
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ,Om'1&85:(<,8J?1).$F3-!26C.Cw=P/!;( Ii'T?4By2_!%I3-Lc:S+%/x(1<<S14=d;1x5*f#'n:N3 Gg%3n+Y;3C#%Y=4Ym"\g(6j.Xq.Ds"4z4Zg?^y?_?8#v6)48Fg#)x2I;*Og*&.<^5,5p/-b>"n)3$1C9-Z'9'|-&t&Fc,T-96(9I39 ~/Ok:Ws<68)4`!42<-j*Mc/7,)9:!)4%$*,B#<_=5:h*\w;;j%#253*2Ao;Nc-?r. |
+
+# Check memcached; run the following command on clabsvr; you should see a value of 1000000 for "cmd_set"; press "Ctr+c" to exit:
+
+user@clabsvr:~/HarvestContainers/TestFramework/Experiments$ nc -v 192.168.10.10 31212
+Connection to 192.168.10.10 31212 port [tcp/*] succeeded!
+stats
+STAT pid 8
+STAT uptime 67721
+...
+STAT cmd_get 251971000
+STAT cmd_set 1000000
+...
+<Ctr+c to exit>
+```
+
+- If any of the above data is missing, run the following respective command(s) on clabcl1 to populate it:
+```bash
+# Load xapian data
+cd /mnt/extra
+sudo mkdir -p /dev/shm/xapian.inputs && sudo cp -r tailbench.inputs/xapian /dev/shm/xapian.inputs/
+
+# Load mysql data
+curl --data "{\"mysql_server\":\"192.168.10.11:32306\"}" --header "Content-Type: application/json" http://192.168.10.10:32002/load
+
+# Load memcached data
+curl --data "{\"memcached_server\":\"192.168.10.11:31212\"}" --header "Content-Type: application/json" http://192.168.10.10:32003/load
+```
+
 ### Pre-Flight: Check for Correct Workload Setup
 
 - Use the [sanity.sh](../TestFramework/Experiments/sanity.sh) to test if the workloads are setup properly. This script runs sample baseline and harvest tests, and takes ~9 minutes to complete. It should be run on the clabcl1 node.

@@ -6,21 +6,25 @@ dur=60
 
 #./<workload>_runner.sh <trial_num> <num_secondary_workers> <tic> <qps> <dur> <harvest/baseline>
 
-echo "[+] Pinning cores for workloads"
-cur_dir=$(pwd)
-cd ~/HarvestContainers/TestFramework/Tools/
-./pincores.sh 2,4,6,8,10,12,14,16 clabcl1 memcached-primary
-./pincores.sh 2,4,6,8,10,12,14,16 clabcl1 mysql-primary
-./pincores.sh 2,4,6,8,10,12,14,16 clabcl1 xapian-primary 
-./pincores.sh 18 clabcl1 cpubully-secondary
-cd $cur_dir
+pincores() {
+  echo "[+] Pinning cores for workloads"
+  cur_dir=$(pwd)
+  cd ~/HarvestContainers/TestFramework/Tools/
+  ./pincores.sh 2,4,6,8,10,12,14,16 clabcl1 memcached-primary
+  ./pincores.sh 2,4,6,8,10,12,14,16 clabcl1 mysql-primary
+  ./pincores.sh 2,4,6,8,10,12,14,16 clabcl1 xapian-primary
+  ./pincores.sh 18 clabcl1 cpubully-secondary
+  cd $cur_dir
+}
 
 # memcached: ~116 minutes
 start_time=$(date +%s)
 
 for((i=start; i<=end; i++)); do
   for ((qps=10000; qps<=100000; qps+=10000)); do
+    pincores
     ./memcached_runner.sh $i 1 1 $qps $dur baseline
+    pincores
     ./memcached_runner.sh $i 9 7 $qps $dur harvest
   done 
 done
@@ -39,7 +43,9 @@ start_time=$(date +%s)
 
 for((i=start; i<=end; i++)); do
   for ((qps=500; qps<=4000; qps+=500)); do
+    pincores
     ./xapian_runner.sh $i 1 1 $qps $dur baseline
+    pincores
     ./xapian_runner.sh $i 9 7 $qps $dur harvest
   done 
 done
@@ -54,7 +60,9 @@ start_time=$(date +%s)
 
 for((i=start; i<=end; i++)); do
   for ((qps=1000; qps<=8000; qps+=1000)); do
+    pincores
     ./mysql_runner.sh $i 1 1 $qps $dur baseline
+    pincores
     ./mysql_runner.sh $i 9 7 $qps $dur harvest
   done 
 done

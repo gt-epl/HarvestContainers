@@ -21,17 +21,20 @@ done
 
 CPULIST=2,4,6,8,10,12,14,16
 WORKER_LIST=1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31
-echo "[+] Pinning cores for workloads"
-cur_dir=$(pwd)
-cd ~/HarvestContainers/TestFramework/Tools/
-./pincores.sh $CPULIST clabcl1 memcached-primary
-./pincores.sh $CPULIST clabcl1 xapian-primary
-./pincores.sh $CPULIST clabcl1 mysql-primary
-./pincores.sh 18 clabcl1 cpubully-secondary
-./pincores.sh 20 clabcl1 nwbully-secondary
-./pincores.sh $WORKER_LIST clabcl1 mutilate-cl1
-./pincores.sh $WORKER_LIST clabcl1 ycsb-cl1
-cd $cur_dir
+
+pincores() {
+  echo "[+] Pinning cores for workloads"
+  cur_dir=$(pwd)
+  cd ~/HarvestContainers/TestFramework/Tools/
+  ./pincores.sh $CPULIST clabcl1 memcached-primary
+  ./pincores.sh $CPULIST clabcl1 xapian-primary
+  ./pincores.sh $CPULIST clabcl1 mysql-primary
+  ./pincores.sh 18 clabcl1 cpubully-secondary
+  ./pincores.sh 20 clabcl1 nwbully-secondary
+  ./pincores.sh $WORKER_LIST clabcl1 mutilate-cl1
+  ./pincores.sh $WORKER_LIST clabcl1 ycsb-cl1
+  cd $cur_dir
+}
 
 # start iperf servers
 curl --data "{\"duration\":\"${DURATION}\",\"workers\":\"10\",\"trial\":\"${ITER}\"}" --header "Content-Type: application/json" http://192.168.10.11:30300/start
@@ -39,35 +42,45 @@ curl --data "{\"duration\":\"${DURATION}\",\"workers\":\"10\",\"trial\":\"${ITER
 time_start=$(date +%s)
 for((i=start; i<=end; i++)); do
 
+# Baseline and IRQ Unaware Harvest
   for qps in 10000 50000 100000; do
+    pincores
     ./memcached_runner.sh $i 9 7 $qps 60 baseline-irq
+    pincores
     ./memcached_runner.sh $i 9 7 $qps 60 harvest-irq
   done
 
   for qps in 500 2500 4000; do
+    pincores
     ./xapian_runner.sh $i 9 7 $qps 60 baseline-irq
+    pincores
     ./xapian_runner.sh $i 9 7 $qps 60 harvest-irq
   done
 
   for qps in 1000 4000 8000; do
+    pincores
     ./mysql_runner.sh $i 9 7 $qps 60 baseline-irq
+    pincores
     ./mysql_runner.sh $i 9 7 $qps 60 harvest-irq
   done
 done
 
 
-# IRQ aware
+# IRQ Aware Harvest
 for((i=start; i<=end; i++)); do
 
   for qps in 10000 50000 100000; do
+    pincores
     ./memcached_runner.sh $i 9 7 $qps 60 harvest-irq "aware"
   done
 
   for qps in 500 2500 4000; do
+    pincores
     ./xapian_runner.sh $i 9 7 $qps 60 harvest-irq "aware"
   done
 
   for qps in 1000 4000 8000; do
+    pincores
     ./mysql_runner.sh $i 9 7 $qps 60 harvest-irq "aware"
   done
 done

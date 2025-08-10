@@ -21,21 +21,24 @@ mysql_cpulist=1,3,5,7,9,11,13,15
 x264_cpulist=18
 dedup_cpulist=19
 
-echo "[+] Pinning cores for workloads"
-cur_dir=$(pwd)
-cd ~/HarvestContainers/TestFramework/Tools/
-./pincores.sh $mysql_cpulist clabcl1 mysql-primary
-./pincores.sh $xapian_cpulist clabcl1 xapian-primary 
-./pincores.sh $x264_cpulist clabcl1 x264-secondary
-./pincores.sh $dedup_cpulist clabcl1 dedup-secondary
-cd $cur_dir
+pincores() {
+  echo "[+] Pinning cores for workloads"
+  cur_dir=$(pwd)
+  cd ~/HarvestContainers/TestFramework/Tools/
+  ./pincores.sh $mysql_cpulist clabcl1 mysql-primary
+  ./pincores.sh $xapian_cpulist clabcl1 xapian-primary 
+  ./pincores.sh $x264_cpulist clabcl1 x264-secondary
+  ./pincores.sh $dedup_cpulist clabcl1 dedup-secondary
+  cd $cur_dir
+}
 
-# memcached: ~116 minutes
 start_time=$(date +%s)
 
 for((i=start; i<=end; i++)); do
   for qps in LOW MEDIUM HIGH; do
+    pincores
     ./multi-primary_runner.sh $i 1 1 $qps $dur baseline $mysql_cpulist $xapian_cpulist
+    pincores
     ./multi-primary_runner.sh $i 9 7 $qps $dur harvest $mysql_cpulist $xapian_cpulist
   done 
 done
